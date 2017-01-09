@@ -1,0 +1,180 @@
+name: Root
+main: wickersoft.root.Root
+version: 3.1.4
+author: Wickersoft+Syndek
+
+commands:
+  ding:
+    description: Plays a "Ding" sound when a chat message matches the specified pattern
+    permission: root.ding
+  freeze:
+    description: Freeze a player and stop them moving and using commands.
+    permission: root.freeze
+  instantsign:
+    description: Generates signs that can be played without editing
+    aliases: [sign]
+    permission: root.instantsign
+  inventory:
+    description: Save, load, and delete inventories.
+    aliases: [inv]
+    permission: root.inventory
+  kleinbottle:
+    description: Generates an item that can instantly transfer all of a Tesseract's contents
+    permission: root.kleinbottle 
+  lore:
+    description: Edit an item's lore
+    permission: root.lore
+  name:
+    description: Edit an item's name
+    permission: root.name
+  nv:
+    description: Toggle permanent night vision
+    aliases: [see]
+    permission: root.nv
+  player:
+    description: View information about a player
+    aliases: [p]
+    permission: root.player
+  slurp:
+    description: Pick up items and XP orbs around you.
+    permission: root.slurp
+  sub:
+    description: Display subtitles after a player's messages
+    permission: root.sub
+  undercover:
+    description: Go undercover and hide your chat formatting.
+    permission: root.undercover
+    aliases: [u]
+  volatile:
+    description: Makes an item impossible to pick up for Players without a certain permission
+    permission: root.volatile
+  wand:
+    description: Adds special right-click actions to the item held
+    permission: root.wand
+
+permissions:
+  root.*:
+    description: Gives access to all features in Root.
+    children:
+      root: true
+      root.chat.*: true
+      root.ding: true
+      root.freeze: true
+      root.item.*: true
+      root.instantsign: true
+      root.inventory.*: true
+      root.kleinbottle: true
+      root.lore: true
+      root.mail: true
+      root.name: true
+      root.notify.*: true
+      root.nv: true
+      root.player.*: true
+      root.sign.*: true
+      root.slurp: true
+      root.sub: true
+      root.tricorder.*: true
+      root.undercover: true
+      root.volatile: true
+      root.wand.*: true
+      
+  root.chat.*:
+    children:
+      root.chat: true
+      root.chat.bypassspam: true
+      root.chat.bypassdisconnectspam: true
+  
+  root.freeze.*:
+    description: Gives access to the freeze feature of Root and its bypass.
+    children:
+      root.freeze: true
+      root.freeze.bypass: true
+      
+  root.inventory.*:
+    children:
+      root.inventory: true
+      root.inventory.other: true
+  
+  root.item.*:
+    children:
+      root.item.instantsign: true
+      root.item.kleinbottle: true
+      root.item.volatile: true
+  
+  root.notify.*:
+    children:
+      root.notify.firstjoin: true
+      root.notify.flykick: true
+      root.notify.iprec: true
+      root.notify.xray: true
+  
+  root.player.*:
+    children:
+      root.player: true
+      root.player.homes: true
+  
+  root.sign.*:
+    children:
+      root.sign: true  
+      root.sign.boat.*: true
+      root.sign.cart.*: true
+      root.sign.info.*: true
+      root.sign.launch.*: true
+      root.sign.lift.*: true
+      root.sign.tesseract.*: true
+      
+  root.sign.boat.*:
+    children:
+      root.sign.boat: true  
+      root.sign.boat.create: true
+
+  root.sign.cart.*:
+    children:
+      root.sign.cart: true  
+      root.sign.cart.create: true
+  
+  root.sign.info.*:
+    children:
+      root.sign.info: true  
+      root.sign.info.create: true
+      root.sign.info.edit: true
+  
+  root.sign.lift.*:
+    children:
+      root.sign.lift: true  
+      root.sign.lift.create: true
+  
+  root.sign.tesseract.*:
+    children:
+      root.sign.tesseract: true  
+      root.sign.tesseract.create: true
+      root.sign.tesseract.other: true
+
+  root.tricorder.*:
+    children:
+      root.tricorder: true
+
+  root.mute.*:
+    description: Gives access to the mute feature of Root and its bypass.
+    children:
+      root.mute: true
+      root.mute.bypass: true
+
+  root.slurp.*:
+    description: Gives access to the slurp feature of Root and its radius function.
+    children:
+      root.slurp: true
+      root.slurp.radius: true
+      
+  root.wand.*:
+    children:
+      root.wand: true
+      root.wand.petowner: true
+      root.wand.stack: true
+      root.wand.strip.*: true
+      root.wand.silkdick: true
+  
+  root.wand.strip.*:
+    children:
+      root.wand.strip: true
+      root.wand.strip.player: true

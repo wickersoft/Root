@@ -1,0 +1,18 @@
+## YAML Template.
+max-slurp-range: 100
+default-slurp-range: 16
+max-fill-range: 32
+default-fill-range: 8
+max-fill-amount: 256
+default-fill-amount: 64
+xray-warn-time: 900000
+inv-save-auto-overwrite: true
+shortcuts:
+  - replace: "^\/iload\b"
+    with: "/inv load"
+  - replace: "^\/isave\b"
+    with: "/inv save"
+  - replace: "^\/ilist\b"
+    with: "/inv list"
+  - replace: "^\/j\b"
+    with: "/jump"

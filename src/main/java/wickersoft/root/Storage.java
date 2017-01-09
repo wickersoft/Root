@@ -1,0 +1,127 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package wickersoft.root;
+
+import com.earth2me.essentials.Essentials;
+import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+import java.io.File;
+import java.io.IOException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Pattern;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Entity;
+import org.bukkit.plugin.Plugin;
+
+/**
+ *
+ * @author Dennis
+ */
+public class Storage {
+
+    public static final HashMap<String, String> INFO_SIGNS = new HashMap<>();
+    public static final HashMap<String, String> LANGUAGE_ALIASES = new HashMap<>();
+    public static final HashMap<String, Petition> PETITIONS = new HashMap<>();
+    public static final HashMap<Pattern, String> SHORTCUTS = new HashMap<>();
+    public static final HashSet<Entity> VEHICLES = new HashSet<>();
+    public static final HashMap<String, String> WARN_IPS = new HashMap<>();
+    public static final String[] KNOWN_LANGCODES = {
+        "en", "de", "da", "sv", "no", "fr", "es"
+    };
+    
+
+    public static boolean INV_SAVE_AUTO_OVERWRITE;
+    public static int MAX_SLURP_RANGE;
+    public static int DEFAULT_SLURP_RANGE;
+    public static int TRANSLATION_TIMEOUT;
+    public static long XRAY_WARN_TIME;
+    public static MessageDigest md5;
+
+    public static Essentials essentials = (Essentials) Bukkit.getPluginManager().getPlugin("Essentials");
+    public static WorldGuardPlugin worldguard = (WorldGuardPlugin) Bukkit.getPluginManager().getPlugin("WorldGuard");
+
+    public static void loadData() {
+        YamlConfiguration fc = YamlConfiguration.read(new File(Root.instance().getDataFolder(), "config.yml"));
+        MAX_SLURP_RANGE = fc.getInt("max-slurp-range", 100);
+        DEFAULT_SLURP_RANGE = fc.getInt("default-slurp-range", 16);
+        TRANSLATION_TIMEOUT = fc.getInt("translation-timeout", 2000);
+        INV_SAVE_AUTO_OVERWRITE = fc.getBoolean("inv-save-auto-overwrite", true);
+        XRAY_WARN_TIME = fc.getInt("xray-warn-time", 900000);
+        
+        List<Map> shortcuts = fc.getList("shortcuts", Map.class);
+        SHORTCUTS.clear();
+        shortcuts.forEach((map) -> {
+            if (map.containsKey("replace") && map.containsKey("with")
+                    && map.get("replace") instanceof String && map.get("with") instanceof String) {
+                SHORTCUTS.put(Pattern.compile((String) map.get("replace")), (String) map.get("with"));
+            }
+        });
+
+        
+        INFO_SIGNS.clear();
+        YamlConfiguration.read(new File(Root.instance().getDataFolder(), "infosigns.yml")).forEach(
+                (key, value) -> {
+                    if (value instanceof String) {
+                        INFO_SIGNS.put(key, (String) value);
+                    }
+                });
+
+        
+        PETITIONS.clear();
+        YamlConfiguration petitionData = YamlConfiguration.read(new File(Root.instance().getDataFolder(), "petitions.yml"));
+        petitionData.keySet().forEach((key) -> {
+            List<String> signatures = petitionData.getList(key, String.class);
+            PETITIONS.put(key, new Petition(key, signatures));
+        });
+
+    }
+
+    public static void saveData() {
+        YamlConfiguration yaml = YamlConfiguration.emptyConfiguration();
+        
+        
+        PETITIONS.forEach(
+                (name, petition) -> {
+                    yaml.put(name, petition.getSignatures());
+                });
+        try {
+            yaml.save(new File(Root.instance().getDataFolder(), "petitions.yml"));
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        yaml.clear();
+
+        
+        
+        INFO_SIGNS.forEach(
+                (name, value) -> {
+                    yaml.put(name, value);
+                });
+        try {
+            yaml.save(new File(Root.instance().getDataFolder(), "infosigns.yml"));
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    static {
+        try {
+            md5 = MessageDigest.getInstance("MD5");
+        } catch (NoSuchAlgorithmException ex) {
+        }
+        LANGUAGE_ALIASES.put("english", "en");
+        LANGUAGE_ALIASES.put("german", "de");
+        LANGUAGE_ALIASES.put("danish", "da");
+        LANGUAGE_ALIASES.put("swedish", "sv");
+        LANGUAGE_ALIASES.put("norwegian", "no");
+        LANGUAGE_ALIASES.put("french", "fr");
+        LANGUAGE_ALIASES.put("spanish", "es");
+    }
+}
