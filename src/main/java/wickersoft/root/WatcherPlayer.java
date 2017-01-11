@@ -5,6 +5,10 @@
  */
 package wickersoft.root;
 
+import java.io.File;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.util.Date;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -15,6 +19,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -24,6 +29,7 @@ import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.EquipmentSlot;
+import syn.root.user.InventoryProvider;
 import syn.root.user.UserData;
 import syn.root.user.UserDataProvider;
 
@@ -34,6 +40,7 @@ import syn.root.user.UserDataProvider;
 public class WatcherPlayer implements Listener {
 
     private static final WatcherPlayer INSTANCE = new WatcherPlayer();
+    private static final SimpleDateFormat DEATH_INVENTORY_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
 
     public static WatcherPlayer instance() {
         return INSTANCE;
@@ -77,6 +84,22 @@ public class WatcherPlayer implements Listener {
         Player player = (Player) evt.getDamager();
         if (UserDataProvider.getOrCreateUser(player).isFrozen()) {
             evt.setCancelled(true);
+        }
+    }
+    
+    @EventHandler
+    public void onPlayerDeath(PlayerDeathEvent evt) {
+        long currentMillis = System.currentTimeMillis();
+        String deathInventoryName = "death-" + DEATH_INVENTORY_DATE_FORMAT.format(Date.from(Instant.ofEpochMilli(currentMillis)));
+        File deathInventoryFile = InventoryProvider.getInventoryFile(evt.getEntity(), deathInventoryName);
+        InventoryProvider.saveInventory(evt.getEntity(), deathInventoryFile);
+        
+        File[] allInventoryFiles = InventoryProvider.getInventoryFiles(evt.getEntity().getUniqueId());
+        for(File file : allInventoryFiles) {
+            if(file.getName().startsWith("death-") 
+                    && currentMillis - file.lastModified() > Storage.MAX_DEATH_INV_AGE_MILLIS) {
+                file.delete(); // Clean up old death inventories
+            }
         }
     }
 

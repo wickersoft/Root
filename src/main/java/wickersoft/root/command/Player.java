@@ -95,6 +95,7 @@ public class Player extends Command {
             for (int i = 0; i < 12; i++) {
                 sum += yearlyMetrics[i];
             }
+            sum /= 12;
             sender.sendMessage(format("Hours played", "" + sum + ChatColor.GRAY + ChatColor.ITALIC + "  [/activity " + data.getName() + "]"));
             sender.sendMessage("");
         }

@@ -248,10 +248,10 @@ public class UserData {
         }
 
         String yearString = yaml.getString("yearlyActivity", "");
-        if (weekString.length() == 13 * 3) {
+        if (yearString.length() == 13 * 3) {
             char[] yearChars = yearString.toCharArray();
-            for (int i = 0; i < 24 * 7; i++) {
-                weeklyMetrics[i] = (int) StringUtil.getBase64Bits(yearChars, 3 * i, 3 * i + 3);
+            for (int i = 0; i < 13; i++) {
+                yearlyMetrics[i] = (int) StringUtil.getBase64Bits(yearChars, 3 * i, 3 * i + 3);
             }
         }
         List<YamlConfiguration> markSectionList = yaml.getSectionList("marks");

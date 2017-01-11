@@ -56,25 +56,28 @@ public class InventoryProvider {
     }
 
     public static String[] listInventories(UUID uuid) {
+        File[] inventories = getInventoryFiles(uuid);
+        String[] inventoryNames = new String[inventories.length];
+        for (int i = 0; i < inventories.length; i++) {
+            String name = inventories[i].getName();
+            inventoryNames[i] = name.substring(0, name.lastIndexOf("."));
+        }
+        return inventoryNames;
+    }
+
+    public static File[] getInventoryFiles(UUID uuid) {
         File inventoryFolderFile = new File(Root.instance().getDataFolder(), "users/" + uuid + "/inventories");
-        File[] inventories;
         if (inventoryFolderFile.exists() || inventoryFolderFile.isDirectory()) {
-            inventories = inventoryFolderFile.listFiles();
-            String[] inventoryNames = new String[inventories.length];
-            for (int i = 0; i < inventories.length; i++) {
-                String name = inventories[i].getName();
-                inventoryNames[i] = name.substring(0, name.lastIndexOf("."));
-            }
-            return inventoryNames;
+            return inventoryFolderFile.listFiles();
         } else {
-            return null;
+            return new File[0];
         }
     }
-    
+
     public static File getInventoryFile(Player player, String name) {
         return getInventoryFile(player.getUniqueId(), name);
     }
-    
+
     public static File getInventoryFile(UUID uuid, String name) {
         return new File(Root.instance().getDataFolder(), "users/" + uuid + "/inventories/" + name + ".yml");
     }

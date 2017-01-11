@@ -43,6 +43,7 @@ public class Storage {
     public static int DEFAULT_SLURP_RANGE;
     public static int TRANSLATION_TIMEOUT;
     public static long XRAY_WARN_TIME;
+    public static long MAX_DEATH_INV_AGE_MILLIS;
     public static boolean DEBUG;
     public static MessageDigest md5;
 
@@ -56,7 +57,8 @@ public class Storage {
         DEFAULT_SLURP_RANGE = fc.getInt("default-slurp-range", 16);
         TRANSLATION_TIMEOUT = fc.getInt("translation-timeout", 2000);
         INV_SAVE_AUTO_OVERWRITE = fc.getBoolean("inv-save-auto-overwrite", true);
-        XRAY_WARN_TIME = fc.getInt("xray-warn-time", 900000);
+        XRAY_WARN_TIME = fc.getInt("xray-warn-time-millis", 900000);
+        MAX_DEATH_INV_AGE_MILLIS = fc.getInt("max-death-inventory-age-days", 14) * 14 * 86400 * 1000 ;
         DEBUG = fc.getBoolean("debug", false);
 
         List<Map> shortcuts = fc.getList("shortcuts", Map.class);

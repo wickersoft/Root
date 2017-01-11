@@ -39,9 +39,8 @@ public class Activity extends Command {
         "",
         "",
         "",
-        "",
-        "",
-        ChatColor.YELLOW + "Server Time"};
+        ChatColor.YELLOW + "Server Time",
+        ""};
     private static final String PIPE = ChatColor.DARK_GRAY + "|";
     private static final String AXIS_SPACER = ChatColor.BOLD + "  " + ChatColor.RESET + "    ";
     private static final String BOX_SPACER = ChatColor.DARK_GRAY + "\u2591";

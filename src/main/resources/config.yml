@@ -5,7 +5,8 @@ max-fill-range: 32
 default-fill-range: 8
 max-fill-amount: 256
 default-fill-amount: 64
-xray-warn-time: 900000
+xray-warn-time-millis: 900000
+max-death-inventory-age-days: 14
 inv-save-auto-overwrite: true
 shortcuts:
   - replace: "^\/iload\b"

@@ -22,6 +22,9 @@ users with the permission *root.notify.flykick*.
 When a player is banned and joins with a different account from the same IP address, a warning is broadcast to
 users with the permission *root.notify.iprec*. IP addresses are NOT remembered across server restarts.
 
+###Marks
+When a player with high priority marks joins, a warning is broadcast to users with the permission *root.notify.mark*.
+
 ###Subtitles:
 Subtitles can be enabled by a command. See Commands/Sub for usage details.
 
@@ -39,6 +42,10 @@ This same feature also provides the alias /j for /jump.
 
 
 #Commands:
+
+###/activity [player]
+Displays a heatmap of a player's activity throughout times of day and days of week
+Permission: *root.activity*
 
 ###/ding [pattern]
 Plays a note when a chat messages matches a user-specified pattern. A basic example of a pattern is brain|brainiac. The pattern can be any valid regular expression.
@@ -68,6 +75,10 @@ Permission: *root.kleinbottle*
 Edits an item's lore. Can parse ampersand color codes.
 Permission: *root.lore*
 
+###/mark [player]
+Keep notes about specific players
+Permission: *root.mark*
+
 ###/name [name]
 Edits an item's name. Can parse ampersand color codes.
 Permission: *root.name*
@@ -82,6 +93,10 @@ Still has its old functionality.
 Note: Can now list a user's homes.
 Aliases: /p
 Permission: *root.player*, *root.player.homes*
+
+###/seelwc [radius]
+Makes blocks protected by the LWC plugin visible through walls
+Permission: root.seelwc
 
 ###/shadowmute [player]
 Makes a player's chat messages only visible to that player.
