@@ -40,7 +40,7 @@ import syn.root.user.UserDataProvider;
 public class WatcherPlayer implements Listener {
 
     private static final WatcherPlayer INSTANCE = new WatcherPlayer();
-    private static final SimpleDateFormat DEATH_INVENTORY_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
+    private static final SimpleDateFormat DEATH_INVENTORY_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss");
 
     public static WatcherPlayer instance() {
         return INSTANCE;
@@ -86,21 +86,22 @@ public class WatcherPlayer implements Listener {
             evt.setCancelled(true);
         }
     }
-    
+
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent evt) {
         long currentMillis = System.currentTimeMillis();
-        String deathInventoryName = "death-" + DEATH_INVENTORY_DATE_FORMAT.format(Date.from(Instant.ofEpochMilli(currentMillis)));
-        File deathInventoryFile = InventoryProvider.getInventoryFile(evt.getEntity(), deathInventoryName);
-        InventoryProvider.saveInventory(evt.getEntity(), deathInventoryFile);
-        
         File[] allInventoryFiles = InventoryProvider.getInventoryFiles(evt.getEntity().getUniqueId());
-        for(File file : allInventoryFiles) {
-            if(file.getName().startsWith("death-") 
+        for (File file : allInventoryFiles) {
+            if (file.getName().startsWith("_death-")
                     && currentMillis - file.lastModified() > Storage.MAX_DEATH_INV_AGE_MILLIS) {
                 file.delete(); // Clean up old death inventories
             }
         }
+
+        
+        String deathInventoryName = "_death-" + DEATH_INVENTORY_DATE_FORMAT.format(Date.from(Instant.ofEpochMilli(currentMillis)));
+        File deathInventoryFile = InventoryProvider.getInventoryFile(evt.getEntity(), deathInventoryName);
+        InventoryProvider.saveInventory(evt.getEntity(), deathInventoryFile);
     }
 
     @EventHandler
@@ -123,12 +124,12 @@ public class WatcherPlayer implements Listener {
         UserData data = UserDataProvider.getOrCreateUser(evt.getPlayer());
         data.setName(evt.getPlayer().getName());
         data.setIp(ip);
-        if(Storage.WARN_IPS.containsKey(ip)
+        if (Storage.WARN_IPS.containsKey(ip)
                 && !evt.getPlayer().getName().equals(Storage.WARN_IPS.get(ip))) {
-            Bukkit.broadcast(ChatColor.RED + "Player " + evt.getPlayer().getName() + "\'s IP matches with " + Storage.WARN_IPS.get(ip) +"!", "root.notify.iprec");
+            Bukkit.broadcast(ChatColor.RED + "Player " + evt.getPlayer().getName() + "\'s IP matches with " + Storage.WARN_IPS.get(ip) + "!", "root.notify.iprec");
         }
-        for(Mark mark : data.getMarks()) {
-            if(mark.getPriority() > 0) {
+        for (Mark mark : data.getMarks()) {
+            if (mark.getPriority() > 0) {
                 Bukkit.broadcast(ChatColor.RED + "Player " + evt.getPlayer().getName() + " has Marks! " + ChatColor.GRAY + ChatColor.ITALIC + "[/mark " + data.getName() + "]", "root.notify.mark");
             }
         }

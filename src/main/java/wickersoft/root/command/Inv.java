@@ -56,6 +56,9 @@ public class Inv extends PlayerCommand {
                         } else {
                             listPage = 1;
                         }
+                    } else {
+                        uuid = player.getUniqueId();
+                        listPage = 1;
                     }
                 } else {
                     listPage = 1;
