@@ -38,14 +38,30 @@ public class Inv extends PlayerCommand {
                         + (player.hasPermission("root.inventory.other") ? " ([player])" : ""));
                 return true;
             case "list":
-                UUID uuid;
-                if (args.length >= 2 && player.hasPermission("root.inventory.other")) {
-                    uuid = UserDataProvider.getUUID(args[1]);
-                    if (uuid == null) {
-                        player.sendMessage(ChatColor.RED + "Error: " + ChatColor.GRAY + " Player name not recognized");
-                        return true;
+                UUID uuid = null;
+                int listPage = 1;
+
+                if (args.length >= 2) {
+                    if (args[1].matches("\\d{1,3}")) {
+                        listPage = Integer.parseInt(args[1]);
+                        uuid = player.getUniqueId();
+                    } else if (player.hasPermission("root.inventory.other")) {
+                        uuid = UserDataProvider.getUUID(args[1]);
+                        if (uuid == null) {
+                            player.sendMessage(ChatColor.RED + "Error: " + ChatColor.GRAY + " Player name not recognized");
+                            return true;
+                        }
+                        if (args.length >= 3 && args[2].matches("\\d{1,3}")) {
+                            listPage = Integer.parseInt(args[2]);
+                        } else {
+                            listPage = 1;
+                        }
+                    } else {
+                        uuid = player.getUniqueId();
+                        listPage = 1;
                     }
                 } else {
+                    listPage = 1;
                     uuid = player.getUniqueId();
                 }
 
@@ -53,11 +69,22 @@ public class Inv extends PlayerCommand {
                 player.sendMessage("");
                 String[] inventories = InventoryProvider.listInventories(uuid);
                 if (inventories == null || inventories.length == 0) {
-                    player.sendMessage(ChatColor.DARK_GRAY + "- " + ChatColor.GRAY + " (none)");
+                    player.sendMessage(ChatColor.GRAY + " (none)");
                 } else {
-                    for (String name : inventories) {
-                        player.sendMessage(ChatColor.DARK_GRAY + "- " + ChatColor.GRAY + name);
+                    StringBuilder sb = new StringBuilder();
+                    sb.append(" ");
+                    int numPages = Math.max((inventories.length + 19) / 20, 1);
+                    if (listPage > numPages) {
+                        listPage = numPages;
                     }
+                    int i = 20 * (listPage - 1);
+                    for (; i < 20 * listPage - 1 && i < inventories.length - 1; i++) {
+                        sb.append(ChatColor.DARK_AQUA).append(inventories[i]).append(ChatColor.DARK_GRAY).append(", ");
+                    }
+                    sb.append(ChatColor.DARK_AQUA).append(inventories[i]);
+                    player.sendMessage(sb.toString());
+                    player.sendMessage("");
+                    player.sendMessage(StringUtil.generateHLineTitle("Page " + listPage + " of " + numPages));
                 }
                 player.sendMessage("");
                 //player.sendMessage(ChatColor.DARK_GRAY + "" + ChatColor.STRIKETHROUGH

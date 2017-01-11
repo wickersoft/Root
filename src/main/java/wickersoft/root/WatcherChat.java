@@ -37,26 +37,27 @@ public class WatcherChat implements Listener {
     public void onChat(AsyncPlayerChatEvent evt) {
         Player player = evt.getPlayer();
         UserData data = UserDataProvider.getOrCreateUser(player);
-        
-        if(data.isShadowmuted()) {
+
+        if (data.isShadowmuted()) {
             evt.setCancelled(true);
             Bukkit.getScheduler().scheduleSyncDelayedTask(Root.instance(), () -> {
-               player.sendMessage(String.format(evt.getFormat(), evt.getPlayer().getDisplayName(), evt.getMessage()));
+                player.sendMessage(String.format(evt.getFormat(), evt.getPlayer().getDisplayName(), evt.getMessage()));
             });
             return;
         }
-        
+
         if (data.isUndercover()) {
             evt.getPlayer().setDisplayName(evt.getPlayer().getName());
         }
-        
+
         if (evt.isCancelled()) {
             return;
         }
 
         Bukkit.getScheduler().scheduleSyncDelayedTask(Root.instance(), () -> {
             for (Player recp : Bukkit.getOnlinePlayers()) {
-                if (recp.hasPermission("root.ding") && UserDataProvider.getOrCreateUser(player).matchDingPattern(evt.getMessage())) {
+                if (recp.hasPermission("root.ding") 
+                        && UserDataProvider.getOrCreateUser(recp).matchDingPattern(evt.getMessage())) {
                     for (int i = 0; i < 16; i++) {
                         recp.playSound(evt.getPlayer().getLocation(), Sound.BLOCK_NOTE_PLING, 1, 1.5f);
                         recp.playSound(evt.getPlayer().getLocation(), Sound.BLOCK_NOTE_PLING, 1, 2f);
@@ -64,7 +65,7 @@ public class WatcherChat implements Listener {
                 }
             }
         });
-        
+
         if (evt.isAsynchronous() && !data.getSubtitleLangPair().equals("")) {
             String translation = translate(evt.getMessage(), data.getSubtitleLangPair());
             evt.setMessage(evt.getMessage().concat("  " + ChatColor.GRAY + ChatColor.ITALIC + "[" + translation + "]"));
@@ -81,6 +82,9 @@ public class WatcherChat implements Listener {
         ForeignCommandHook.onCommand(evt);
     }
 
+    /*
+    If you really want to use this plugin on your own server, have the courtesy to insert your own e-mail here.
+     */
     private String translate(String message, String langpair) {
         try {
             String trans = new String(

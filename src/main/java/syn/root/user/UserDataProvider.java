@@ -11,6 +11,7 @@ import java.io.IOException;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.UUID;
 import org.bukkit.Bukkit;
@@ -85,6 +86,7 @@ public class UserDataProvider {
         if (!newUser.loadData()) {
             return null;
         }
+        USER_MAP.put(uuid, newUser);
         return newUser;
     }
 
@@ -99,14 +101,21 @@ public class UserDataProvider {
         if (player != null) {
             return player.getUniqueId();
         }
-        return UUID_RESOLUTION_MAP.get(name);
+        return UUID_RESOLUTION_MAP.get(name.toLowerCase());
     }
 
     /**
-     * Deletes
+     * Saves UserData objects for offline player and removes them from RAM.
      */
-    public static synchronized void prune() {
-
+    public static synchronized void garbageCollect() {
+        Iterator<Entry<UUID, UserData>> userMapIt = USER_MAP.entrySet().iterator();
+        while (userMapIt.hasNext()) {
+            Entry<UUID, UserData> entry = userMapIt.next();
+            if (Bukkit.getPlayer(entry.getKey()) == null || !Bukkit.getPlayer(entry.getKey()).isOnline()) {
+                entry.getValue().saveData();
+                userMapIt.remove();
+            }
+        }
     }
 
     /**

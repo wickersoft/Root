@@ -2,6 +2,7 @@ package wickersoft.root;
 
 import org.bukkit.FireworkEffect;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
@@ -14,13 +15,13 @@ public class TaskLaunchPlayer extends BukkitRunnable {
     private final boolean previousAllowFlight;
     private final boolean previousFlying;
     private LaunchState state = LaunchState.ASCEND;
-    private Vector v;
+    private final Vector launchVelocity = new Vector(0, 1, 0);
+    
 
     public TaskLaunchPlayer(Player player, Location dest) {
         this.player = player;
         this.dest = dest;
         this.altitude = dest.getY();
-        this.v = new Vector(0, 1, 0);
         this.state = LaunchState.ASCEND;
         previousAllowFlight = player.getAllowFlight();
         previousFlying = player.isFlying();
@@ -36,7 +37,7 @@ public class TaskLaunchPlayer extends BukkitRunnable {
         switch (state) {
             case ASCEND:
                 if (player.getLocation().getY() < altitude) {
-                    player.setVelocity(v);
+                    player.setVelocity(launchVelocity);
                     player.getWorld().createExplosion(player.getLocation(), 0);
                     break;
                 }
@@ -50,17 +51,18 @@ public class TaskLaunchPlayer extends BukkitRunnable {
                             (dest.getBlockX() - pos.getBlockX()) * (dest.getBlockX() - pos.getBlockX()) 
                                     + (dest.getBlockY() - pos.getBlockY()) * (dest.getBlockY() - pos.getBlockY())
                                     + (dest.getBlockZ() - pos.getBlockZ()) * (dest.getBlockZ() - pos.getBlockZ()));
-                    v.setX((dest.getBlockX() - pos.getBlockX()) / euclideanDist);
-                    v.setY((dest.getBlockY() - pos.getBlockY()) / euclideanDist);
-                    v.setZ((dest.getBlockZ() - pos.getBlockZ()) / euclideanDist);
-                    player.setVelocity(v);
+                    launchVelocity.setX((dest.getBlockX() - pos.getBlockX()) / euclideanDist);
+                    launchVelocity.setY((dest.getBlockY() - pos.getBlockY()) / euclideanDist);
+                    launchVelocity.setZ((dest.getBlockZ() - pos.getBlockZ()) / euclideanDist);
+                    player.setVelocity(launchVelocity);
                     break;
                 }
-                player.setAllowFlight(false);
-                player.setFlying(false);
                 state = LaunchState.FALL;
             case FALL:
-                if (player.getLocation().getY() - player.getWorld().getHighestBlockAt(player.getLocation()).getLocation().getY() > 5) {
+                player.setFlying(false);
+                player.setFallDistance(0);
+                player.setAllowFlight(true);
+                if (player.getLocation().add(0, -2, 0).getBlock().getType() == Material.AIR) {
                     FireworkEffectPlayer.playFirework(player.getLocation().add(new Vector(0, 1, 0)), FireworkEffect.Type.BALL, org.bukkit.Color.fromRGB(0xFF8800), true, false);
                     break;
                 }
@@ -70,6 +72,7 @@ public class TaskLaunchPlayer extends BukkitRunnable {
 
     @Override
     public void cancel() {
+        player.setFallDistance(0);
         player.setAllowFlight(previousAllowFlight);
         player.setFlying(previousFlying);
         player.setVelocity(new Vector(0, 0, 0));

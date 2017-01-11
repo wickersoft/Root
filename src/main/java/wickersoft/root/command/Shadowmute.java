@@ -14,7 +14,7 @@ import syn.root.user.UserDataProvider;
  *
  * @author Dennis
  */
-public class Freeze extends Command {
+public class Shadowmute extends Command {
 
     @Override
     public boolean onCommand(CommandSender sender, String[] args) {
@@ -27,17 +27,17 @@ public class Freeze extends Command {
             sender.sendMessage(ChatColor.RED + "Error: " + ChatColor.GRAY + " Player name not recognized");
             return true;
         }
-        data.setFrozen(!data.isFrozen());
-        sender.sendMessage(ChatColor.GRAY + "Player " + data.getName() + " is now " + ChatColor.BLUE + (data.isFrozen() ? "" : "un") + "frozen");
+        data.setShadowmuted(!data.isShadowmuted());
+        sender.sendMessage(ChatColor.GRAY + "Player " + data.getName() + " is now " + ChatColor.BLUE + (data.isShadowmuted() ? "" : "un") + "shadowmuted");
         return true;
     }
 
     public String getSyntax() {
-        return "/freeze [player]";
+        return "/shadowmute [player]";
     }
     
     public String getDescription() {
-        return "Makes a player unable to move or break blocks";
+        return "Makes a player's messages only visible to the player";
     }
     
 }

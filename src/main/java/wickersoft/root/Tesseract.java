@@ -30,18 +30,7 @@ public class Tesseract {
     private static final long DOUBLE_CLICK_MAX_MILLIS = 600;
     private static final long TESSERACT_CAPACITY = Long.MAX_VALUE;
     private static final ItemStack AIR_ITEM = new ItemStack(Material.AIR);
-
-    private static final char[] BASE64_CHARS
-            = {'0', '1', '2', '3', '4', '5', '6', '7',
-                '8', '9', 'A', 'B', 'C', 'D', 'E', 'F',
-                'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
-                'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V',
-                'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd',
-                'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l',
-                'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
-                'u', 'v', 'w', 'x', 'y', 'z', '+', '/'};
     private static final HashMap<Player, Long> DOUBLE_CLICK_TIMER = new HashMap<>();
-    private static final HashMap<Block, Tesseract> TESSERACT_CACHE = new HashMap<>();
     private final Sign sign;
     private boolean valid;
     private Material material;
@@ -102,23 +91,6 @@ public class Tesseract {
         return false;
     }
 
-    private static long getBase64Bits(String source, int start, int end) {
-        long result = 0;
-        char[] chars = source.toCharArray();
-        for (int i = start; i < end; i++) {
-            result |= ((long) (ArrayUtils.indexOf(BASE64_CHARS, chars[i])) << (6 * (end - i - 1)));
-        }
-        return result;
-    }
-
-    private static String toBase64(long bits, int fixedLength) {
-        StringBuilder sb = new StringBuilder();
-        for (int i = fixedLength - 1; i >= 0; i--) {
-            sb.append(BASE64_CHARS[(int) ((bits >> (6 * i)) & 0x3FL)]);
-        }
-        return sb.toString();
-    }
-
     public Tesseract(Sign sign) {
         this.sign = sign;
         long upperBits, lowerBits;
@@ -138,8 +110,8 @@ public class Tesseract {
                 valid = false;
                 return;
             }
-            upperBits = getBase64Bits(dataField, 0, 7);
-            lowerBits = getBase64Bits(dataField, 7, 15);
+            upperBits = StringUtil.getBase64Bits(dataField, 0, 7);
+            lowerBits = StringUtil.getBase64Bits(dataField, 7, 15);
             valid = true;
             amount = ((upperBits << 21) & 0x7FFFFFFFFFE00000L) | ((lowerBits >> 27) & 0x1FFFFF);
             material = Material.getMaterial((int) ((lowerBits >> 15) & 0xFFF));
@@ -337,7 +309,7 @@ public class Tesseract {
                 sign.setLine(2, "" + (amount / 64) + "x64+" + (amount % 64));
                 long upperBits = (amount >> 21) & 0x3FFFFFFFFFFL; // Upper 42 bits of amount (not the sign)
                 long lowerBits = ((amount << 27) & 0xFFFFF8000000L) | (((long) material.getId() << 15) & 0x7FF8000L) | ((damage) & 0x7FFFL);
-                sign.setLine(3, toBase64(upperBits, 7) + toBase64(lowerBits, 8));
+                sign.setLine(3, StringUtil.toBase64(upperBits, 7) + StringUtil.toBase64(lowerBits, 8));
             }
         }
         sign.update(true, blockUpdate);

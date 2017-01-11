@@ -35,9 +35,6 @@ public class InventoryProvider {
             player.getInventory().setContents(toSet);
             player.setLevel(invYaml.getInt("level", 0));
             player.setExp((float) invYaml.getDouble("xp", 0));
-            player.setHealth((float) invYaml.getDouble("health", 20));
-            player.setFoodLevel(invYaml.getInt("foodLevel", 20));
-            player.setSaturation((float) invYaml.getDouble("saturation", 1));
         } catch (IOException | InvalidConfigurationException ex) {
             return false;
         }
@@ -50,9 +47,6 @@ public class InventoryProvider {
         invYaml.set("inventory", player.getInventory().getContents());
         invYaml.set("level", player.getLevel());
         invYaml.set("xp", player.getExp());
-        invYaml.set("health", player.getHealth());
-        invYaml.set("foodLevel", player.getFoodLevel());
-        invYaml.set("saturation", player.getSaturation());
         try {
             invYaml.save(inventoryFile);
         } catch (IOException e) {
@@ -62,25 +56,28 @@ public class InventoryProvider {
     }
 
     public static String[] listInventories(UUID uuid) {
+        File[] inventories = getInventoryFiles(uuid);
+        String[] inventoryNames = new String[inventories.length];
+        for (int i = 0; i < inventories.length; i++) {
+            String name = inventories[i].getName();
+            inventoryNames[i] = name.substring(0, name.lastIndexOf("."));
+        }
+        return inventoryNames;
+    }
+
+    public static File[] getInventoryFiles(UUID uuid) {
         File inventoryFolderFile = new File(Root.instance().getDataFolder(), "users/" + uuid + "/inventories");
-        File[] inventories;
         if (inventoryFolderFile.exists() || inventoryFolderFile.isDirectory()) {
-            inventories = inventoryFolderFile.listFiles();
-            String[] inventoryNames = new String[inventories.length];
-            for (int i = 0; i < inventories.length; i++) {
-                String name = inventories[i].getName();
-                inventoryNames[i] = name.substring(0, name.lastIndexOf("."));
-            }
-            return inventoryNames;
+            return inventoryFolderFile.listFiles();
         } else {
-            return null;
+            return new File[0];
         }
     }
-    
+
     public static File getInventoryFile(Player player, String name) {
         return getInventoryFile(player.getUniqueId(), name);
     }
-    
+
     public static File getInventoryFile(UUID uuid, String name) {
         return new File(Root.instance().getDataFolder(), "users/" + uuid + "/inventories/" + name + ".yml");
     }

@@ -23,7 +23,7 @@ import wickersoft.root.YamlConfiguration;
  * @author Dennis
  */
 public class Player extends Command {
-
+    
     @Override
     public boolean onCommand(CommandSender sender, String[] args) {
         if (args.length == 0) {
@@ -52,7 +52,8 @@ public class Player extends Command {
         sender.sendMessage(format("Frozen", data.isFrozen()));
         sender.sendMessage(format("Shadowmuted", data.isShadowmuted()));
         sender.sendMessage(format("Undercover", data.isUndercover()));
-        
+        sender.sendMessage(format("Marks", "" + data.getMarks().size() + ChatColor.GRAY + ChatColor.ITALIC + "  [/mark " + data.getName() + "]"));
+
         if (Storage.essentials != null) {
             YamlConfiguration yaml = YamlConfiguration.read(new File(Storage.essentials.getDataFolder(), "userdata/" + data.getUUID() + ".yml"));
             if (player == null) {
@@ -89,39 +90,17 @@ public class Player extends Command {
                 YamlConfiguration homes = yaml.getOrCreateSection("homes");
                 sender.sendMessage(format("Homes", "" + ((homes != null) ? homes.size() : 0) + ChatColor.GRAY + ChatColor.ITALIC + "  [/p " + data.getName() + " homes]"));
             }
+            int[] yearlyMetrics = data.getYearlyMetrics();
+            int sum = 0;
+            for (int i = 0; i < 12; i++) {
+                sum += yearlyMetrics[i];
+            }
+            sum /= 12;
+            sender.sendMessage(format("Hours played", "" + sum + ChatColor.GRAY + ChatColor.ITALIC + "  [/activity " + data.getName() + "]"));
             sender.sendMessage("");
         }
 
         return true;
-    }
-
-    private String format(String key, String value) {
-        return ChatColor.DARK_GRAY + " - " + ChatColor.GRAY + key + ": " + ChatColor.DARK_AQUA + value;
-    }
-
-    private String format(String key, boolean value) {
-        return ChatColor.DARK_GRAY + " - " + ChatColor.GRAY + key + ": "
-                + (value ? ChatColor.RED + "Yes" : ChatColor.DARK_AQUA + "No");
-    }
-
-    private String format(String key, int value) {
-        return ChatColor.DARK_GRAY + " - " + ChatColor.GRAY + key + ": " + ChatColor.DARK_AQUA + value;
-    }
-
-    private String[] format(String key, List<String> values) {
-        return format(key, values.toArray());
-    }
-
-    private String[] format(String key, Object[] values) {
-        String[] formats = new String[Math.max(values.length + 1, 2)];
-        formats[0] = ChatColor.DARK_GRAY + " - " + ChatColor.GRAY + key + ": ";
-        if (values.length == 0) {
-            formats[1] = ChatColor.DARK_GRAY + "   - " + ChatColor.GRAY + "(none)";
-        }
-        for (int i = 0; i < values.length; i++) {
-            formats[i + 1] = ChatColor.DARK_GRAY + "   - " + ChatColor.DARK_AQUA + values[i];
-        }
-        return formats;
     }
 
     public String getSyntax() {

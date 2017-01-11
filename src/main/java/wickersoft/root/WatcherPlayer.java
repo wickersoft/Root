@@ -5,6 +5,10 @@
  */
 package wickersoft.root;
 
+import java.io.File;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.util.Date;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -15,6 +19,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -24,6 +29,7 @@ import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.EquipmentSlot;
+import syn.root.user.InventoryProvider;
 import syn.root.user.UserData;
 import syn.root.user.UserDataProvider;
 
@@ -34,6 +40,7 @@ import syn.root.user.UserDataProvider;
 public class WatcherPlayer implements Listener {
 
     private static final WatcherPlayer INSTANCE = new WatcherPlayer();
+    private static final SimpleDateFormat DEATH_INVENTORY_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss");
 
     public static WatcherPlayer instance() {
         return INSTANCE;
@@ -81,6 +88,23 @@ public class WatcherPlayer implements Listener {
     }
 
     @EventHandler
+    public void onPlayerDeath(PlayerDeathEvent evt) {
+        long currentMillis = System.currentTimeMillis();
+        File[] allInventoryFiles = InventoryProvider.getInventoryFiles(evt.getEntity().getUniqueId());
+        for (File file : allInventoryFiles) {
+            if (file.getName().startsWith("_death-")
+                    && currentMillis - file.lastModified() > Storage.MAX_DEATH_INV_AGE_MILLIS) {
+                file.delete(); // Clean up old death inventories
+            }
+        }
+
+        
+        String deathInventoryName = "_death-" + DEATH_INVENTORY_DATE_FORMAT.format(Date.from(Instant.ofEpochMilli(currentMillis)));
+        File deathInventoryFile = InventoryProvider.getInventoryFile(evt.getEntity(), deathInventoryName);
+        InventoryProvider.saveInventory(evt.getEntity(), deathInventoryFile);
+    }
+
+    @EventHandler
     public void onPlayerInteract(PlayerInteractEvent evt) {
         if (UserDataProvider.getOrCreateUser(evt.getPlayer()).isFrozen()) {
             evt.setCancelled(true);
@@ -100,9 +124,14 @@ public class WatcherPlayer implements Listener {
         UserData data = UserDataProvider.getOrCreateUser(evt.getPlayer());
         data.setName(evt.getPlayer().getName());
         data.setIp(ip);
-        if(Storage.WARN_IPS.containsKey(ip)
+        if (Storage.WARN_IPS.containsKey(ip)
                 && !evt.getPlayer().getName().equals(Storage.WARN_IPS.get(ip))) {
-            Bukkit.broadcast(ChatColor.RED + "Player " + evt.getPlayer().getName() + "\'s IP matches with " + Storage.WARN_IPS.get(ip) +"!", "root.notify.iprec");
+            Bukkit.broadcast(ChatColor.RED + "Player " + evt.getPlayer().getName() + "\'s IP matches with " + Storage.WARN_IPS.get(ip) + "!", "root.notify.iprec");
+        }
+        for (Mark mark : data.getMarks()) {
+            if (mark.getPriority() > 0) {
+                Bukkit.broadcast(ChatColor.RED + "Player " + evt.getPlayer().getName() + " has Marks! " + ChatColor.GRAY + ChatColor.ITALIC + "[/mark " + data.getName() + "]", "root.notify.mark");
+            }
         }
         new TaskGeoQuery(data, !evt.getPlayer().hasPlayedBefore()).runTaskAsynchronously(Root.instance());
     }
@@ -131,7 +160,7 @@ public class WatcherPlayer implements Listener {
         if (evt.getReason().equals("Flying is not enabled on this server")) {
             Bukkit.broadcast(ChatColor.RED + "Player " + evt.getPlayer().getName() + " was kicked for flying!", "root.notify.flykick");
         }
-        if (evt.getReason().equals("disconnect.spam") && evt.getPlayer().hasPermission("root.chat.bypassdisconnectspam")) {
+        if (evt.getReason().equals("disconnect.spam") && evt.getPlayer().hasPermission("root.chat.nodisconnectspam")) {
             evt.setCancelled(true);
         }
     }
@@ -143,7 +172,6 @@ public class WatcherPlayer implements Listener {
             launcher.cancel();
         }
         UserData data = UserDataProvider.getOrCreateUser(evt.getPlayer());
-        data.saveData();
     }
 
     @EventHandler

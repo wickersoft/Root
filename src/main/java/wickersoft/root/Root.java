@@ -45,6 +45,7 @@ public class Root extends JavaPlugin {
         getServer().getPluginManager().registerEvents(WatcherSign.instance(), this);
         getServer().getPluginManager().registerEvents(WatcherWand.instance(), this);
         Bukkit.getScheduler().scheduleSyncRepeatingTask(this, MFEffects.instance(), 20, 20);
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(this, ELFEffects.instance(), 6000, 6000);
     }
     
     public static Root instance() {

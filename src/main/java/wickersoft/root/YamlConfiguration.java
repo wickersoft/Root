@@ -14,6 +14,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -112,13 +113,41 @@ public class YamlConfiguration implements Map<String, Object> {
         }
     }
 
+    public long getLong(String path, long defaultValue) {
+        Object value = get(path);
+        if (value instanceof Long) {
+            return (long) value;
+        } else if (value instanceof Integer) {
+            return (long) (int) value;
+        } else {
+            return defaultValue;
+        }
+    }
+
+    public List<YamlConfiguration> getSectionList(String path) {
+        List<YamlConfiguration> list = new ArrayList<>();
+        Object value = get(path);
+        if (value instanceof List) {
+            try {
+                for (Object o : (List) value) {
+                    if (o instanceof Map) {
+                        list.add(new YamlConfiguration((Map) o));
+                    }
+                }
+            } catch (ClassCastException ex) {
+            }
+        } else {
+        }
+        return list;
+    }
+
     public YamlConfiguration getOrCreateSection(String path) {
         Object value = get(path);
         if (value instanceof Map) {
             Map<String, Object> innerMap = (Map<String, Object>) value;
             return new YamlConfiguration(innerMap);
         } else {
-            Map<String, Object> newMap =  new LinkedHashMap<>();
+            Map<String, Object> newMap = new LinkedHashMap<>();
             set(path, newMap);
             return new YamlConfiguration(newMap);
         }
@@ -135,7 +164,7 @@ public class YamlConfiguration implements Map<String, Object> {
 
     @Override
     public Object get(Object oPath) {
-        if(!(oPath instanceof String)) {
+        if (!(oPath instanceof String)) {
             return null;
         }
         String path = (String) oPath;
@@ -155,7 +184,7 @@ public class YamlConfiguration implements Map<String, Object> {
             }
         }
         Object value = innerMap.get(sections[sections.length - 1]);
-        if(value instanceof Map) {
+        if (value instanceof Map) {
             return new YamlConfiguration((Map) value);
         }
         return innerMap.get(sections[sections.length - 1]);
@@ -192,7 +221,7 @@ public class YamlConfiguration implements Map<String, Object> {
         Yaml yaml = new Yaml(options);
         yaml.dump(map, new OutputStreamWriter(stream, "UTF-8"));
     }
-    
+
     @Override
     public Object put(String key, Object value) {
         set(key, value);

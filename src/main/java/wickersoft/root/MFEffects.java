@@ -1,12 +1,13 @@
 package wickersoft.root;
 
+import java.util.List;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import syn.root.user.UserData;
-import syn.root.user.UserDataProvider;
 
 public class MFEffects implements Runnable {
 
@@ -40,8 +41,21 @@ public class MFEffects implements Runnable {
                     }
                 }
             }
+            if (player.hasPermission("root.seelwc") && player.hasMetadata("root.seelwc")
+                    && player.hasMetadata("root.seelwc-loc")) {
+                Location seeLwcLoc = (Location) player.getMetadata("root.seelwc-loc").get(0).value();
+                List<Block> seeLwcBlocks = (List<Block>) player.getMetadata("root.seelwc").get(0).value();
+                if (seeLwcLoc.getWorld() != player.getWorld() || player.getLocation().distanceSquared(seeLwcLoc) > 1024) {
+                    Util.hideHighlightBlocks(seeLwcBlocks, player);
+                } else {
+                    for (Block b : seeLwcBlocks) {
+                        if(b.getType() == Material.AIR) {
+                            Util.hideHighlightBlock(b, player);
+                        }
+                    }
+                }
+            }
             //UserData data = UserDataProvider.getOrCreateUser(player);
         }
-        Tesseract.garbageCollect();
     }
 }
