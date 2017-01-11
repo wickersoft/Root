@@ -23,13 +23,7 @@ import wickersoft.root.YamlConfiguration;
  * @author Dennis
  */
 public class Player extends Command {
-
-    private static final ChatColor[] HEATMAP_SCALE = {ChatColor.BLACK, ChatColor.DARK_RED, ChatColor.RED, ChatColor.GOLD, ChatColor.YELLOW, ChatColor.WHITE, ChatColor.AQUA};
-
-    private static final String[] WEEKDAY_AXIS
-            = {"Mon ", "  " + ChatColor.BOLD + "  ", "  " + ChatColor.BOLD + "  ",
-                "Thu ", "  " + ChatColor.BOLD + "  ", "  " + ChatColor.BOLD + "  ", "Sun "};
-
+    
     @Override
     public boolean onCommand(CommandSender sender, String[] args) {
         if (args.length == 0) {
@@ -58,6 +52,7 @@ public class Player extends Command {
         sender.sendMessage(format("Frozen", data.isFrozen()));
         sender.sendMessage(format("Shadowmuted", data.isShadowmuted()));
         sender.sendMessage(format("Undercover", data.isUndercover()));
+        sender.sendMessage(format("Marks", "" + data.getMarks().size() + ChatColor.GRAY + ChatColor.ITALIC + "  [/mark " + data.getName() + "]"));
 
         if (Storage.essentials != null) {
             YamlConfiguration yaml = YamlConfiguration.read(new File(Storage.essentials.getDataFolder(), "userdata/" + data.getUUID() + ".yml"));
@@ -95,45 +90,16 @@ public class Player extends Command {
                 YamlConfiguration homes = yaml.getOrCreateSection("homes");
                 sender.sendMessage(format("Homes", "" + ((homes != null) ? homes.size() : 0) + ChatColor.GRAY + ChatColor.ITALIC + "  [/p " + data.getName() + " homes]"));
             }
-            /*
-            if (ArrayUtils.contains(args, "metrics")) {
-                int[] weeklyMetrics = data.getWeeklyMetrics();
-                int[] yearlyMetrics = data.getYearlyMetrics();
-                int weekMax = 1;
-                int yearMax = 1;
-                for (int i = 0; i < 12; i++) {
-                    if (yearlyMetrics[i] > yearMax) {
-                        yearMax = yearlyMetrics[i];
-                    }
-                }
-                for (int i = 0; i < 24 * 7; i++) {
-                    if (weeklyMetrics[i] > weekMax) {
-                        weekMax = weeklyMetrics[i];
-                    }
-                }
-                
-                StringBuilder sb = new StringBuilder();
-
-                sb.append(ChatColor.RED);
-
-            } else {
-                int[] yearlyMetrics = data.getYearlyMetrics();
-                int sum = 0;
-                for (int i = 0; i < 12; i++) {
-                    sum += yearlyMetrics[i];
-                }
-                sender.sendMessage(format("Hours played", "" + sum + ChatColor.GRAY + ChatColor.ITALIC + "  [/p " + data.getName() + " metrics]"));
+            int[] yearlyMetrics = data.getYearlyMetrics();
+            int sum = 0;
+            for (int i = 0; i < 12; i++) {
+                sum += yearlyMetrics[i];
             }
-             */
+            sender.sendMessage(format("Hours played", "" + sum + ChatColor.GRAY + ChatColor.ITALIC + "  [/activity " + data.getName() + "]"));
             sender.sendMessage("");
         }
 
         return true;
-    }
-
-    private String[] buildStatChats(int[] weeklyMetrics, int[] yearlyMetrics) {
-        String[] lines = new String[9];
-        return lines;
     }
 
     public String getSyntax() {

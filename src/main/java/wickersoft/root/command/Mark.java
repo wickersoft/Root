@@ -37,33 +37,34 @@ public class Mark extends Command {
             }
             for (wickersoft.root.Mark mark : data.getMarks()) {
                 if (mark.getPriority() == 0) {
-                    sender.sendMessage(ChatColor.DARK_GRAY + " - " + ChatColor.DARK_AQUA + mark.getAuthor() +
-                            ChatColor.DARK_GRAY + ": " + ChatColor.GRAY + mark.getMessage());
+                    sender.sendMessage(ChatColor.DARK_GRAY + " - " + ChatColor.DARK_AQUA + mark.getAuthor()
+                            + ChatColor.DARK_GRAY + ": " + ChatColor.GRAY + mark.getMessage());
                 } else if (mark.getPriority() > 0) {
-                    sender.sendMessage(ChatColor.DARK_GRAY + " - " + ChatColor.RED + mark.getAuthor() +
-                            ChatColor.DARK_GRAY + ": " + ChatColor.GRAY + mark.getMessage());
+                    sender.sendMessage(ChatColor.DARK_GRAY + " - " + ChatColor.RED + mark.getAuthor()
+                            + ChatColor.DARK_GRAY + ": " + ChatColor.GRAY + mark.getMessage());
                 } else if (mark.getPriority() < 0) {
-                    sender.sendMessage(ChatColor.DARK_GRAY + " - " + ChatColor.GRAY + mark.getAuthor() +
-                            ChatColor.DARK_GRAY + ": " + ChatColor.GRAY + mark.getMessage());
+                    sender.sendMessage(ChatColor.DARK_GRAY + " - " + ChatColor.GRAY + mark.getAuthor()
+                            + ChatColor.DARK_GRAY + ": " + ChatColor.GRAY + mark.getMessage());
                 }
             }
             sender.sendMessage("");
             return true;
         }
         if (!args[1].matches("\\d{1,3}")) {
-            String markMessage = StringUtils.join(args, ' ', 2, args.length);
+            String markMessage = StringUtils.join(args, ' ', 1, args.length);
             wickersoft.root.Mark mark = new wickersoft.root.Mark(sender, markMessage);
             data.addMark(mark);
-            sender.sendMessage(ChatColor.GRAY + "Mark created");
+            sender.sendMessage(ChatColor.GRAY + "Mark " + data.getMarks().size() + " created");
             return true;
         }
-        int markId = Integer.parseInt(args[1]);
-        if (markId >= data.getMarks().size()) {
+        int markId = Integer.parseInt(args[1]) - 1;
+        if (markId >= data.getMarks().size() || markId < 0) {
             sender.sendMessage(ChatColor.GRAY + "Invalid mark ID");
             return true;
         }
         wickersoft.root.Mark mark = data.getMarks().get(markId);
-        for (int i = 2; i < args.length;) {
+        boolean changed = false;
+        for (int i = 2; i < args.length; i++) {
             switch (args[i]) {
                 case "done":
                 case "close":
@@ -71,15 +72,20 @@ public class Mark extends Command {
                 case "del":
                 case "remove":
                     data.removeMark(markId);
-                    sender.sendMessage("Mark " + markId + " removed");
+                    sender.sendMessage("Mark " + (markId + 1) + " removed");
                     return true;
                 default:
-                    if (!applyChanges(mark, args[i])) {
+                    if (applyChanges(mark, args[i])) {
+                        changed = true;
+                    } else {
                         sender.sendMessage("Invalid argument \"" + args[i] + "\"");
                     }
             }
         }
-        sender.sendMessage("Mark " + markId + " edited");
+        if (changed) {
+            data.touch();
+            sender.sendMessage("Mark " + (markId + 1) + " edited");
+        }
         return true;
     }
 

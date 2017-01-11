@@ -35,9 +35,6 @@ public class InventoryProvider {
             player.getInventory().setContents(toSet);
             player.setLevel(invYaml.getInt("level", 0));
             player.setExp((float) invYaml.getDouble("xp", 0));
-            player.setHealth((float) invYaml.getDouble("health", 20));
-            player.setFoodLevel(invYaml.getInt("foodLevel", 20));
-            player.setSaturation((float) invYaml.getDouble("saturation", 1));
         } catch (IOException | InvalidConfigurationException ex) {
             return false;
         }
@@ -50,9 +47,6 @@ public class InventoryProvider {
         invYaml.set("inventory", player.getInventory().getContents());
         invYaml.set("level", player.getLevel());
         invYaml.set("xp", player.getExp());
-        invYaml.set("health", player.getHealth());
-        invYaml.set("foodLevel", player.getFoodLevel());
-        invYaml.set("saturation", player.getSaturation());
         try {
             invYaml.save(inventoryFile);
         } catch (IOException e) {

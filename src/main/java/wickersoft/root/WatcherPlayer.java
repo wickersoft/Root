@@ -104,6 +104,11 @@ public class WatcherPlayer implements Listener {
                 && !evt.getPlayer().getName().equals(Storage.WARN_IPS.get(ip))) {
             Bukkit.broadcast(ChatColor.RED + "Player " + evt.getPlayer().getName() + "\'s IP matches with " + Storage.WARN_IPS.get(ip) +"!", "root.notify.iprec");
         }
+        for(Mark mark : data.getMarks()) {
+            if(mark.getPriority() > 0) {
+                Bukkit.broadcast(ChatColor.RED + "Player " + evt.getPlayer().getName() + " has Marks! " + ChatColor.GRAY + ChatColor.ITALIC + "[/mark " + data.getName() + "]", "root.notify.mark");
+            }
+        }
         new TaskGeoQuery(data, !evt.getPlayer().hasPlayedBefore()).runTaskAsynchronously(Root.instance());
     }
 

@@ -111,7 +111,7 @@ public class UserDataProvider {
         Iterator<Entry<UUID, UserData>> userMapIt = USER_MAP.entrySet().iterator();
         while (userMapIt.hasNext()) {
             Entry<UUID, UserData> entry = userMapIt.next();
-            if (!Bukkit.getPlayer(entry.getKey()).isOnline()) {
+            if (Bukkit.getPlayer(entry.getKey()) == null || !Bukkit.getPlayer(entry.getKey()).isOnline()) {
                 entry.getValue().saveData();
                 userMapIt.remove();
             }

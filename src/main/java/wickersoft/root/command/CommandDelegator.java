@@ -34,12 +34,14 @@ public class CommandDelegator {
     }
 
     static {
+        DELEGATIONS.put("activity", new Activity());
         DELEGATIONS.put("ding", new Ding());
         DELEGATIONS.put("freeze", new Freeze());
         DELEGATIONS.put("instantsign", new InstantSign());
         DELEGATIONS.put("inventory", new Inv());
         DELEGATIONS.put("kleinbottle", new Kleinbottle());
         DELEGATIONS.put("lore", new Lore());
+        DELEGATIONS.put("mark", new Mark());
         DELEGATIONS.put("name", new Name());
         DELEGATIONS.put("nv", new Nv());
         DELEGATIONS.put("player", new Player());

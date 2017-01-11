@@ -56,7 +56,6 @@ public class WatcherChat implements Listener {
 
         Bukkit.getScheduler().scheduleSyncDelayedTask(Root.instance(), () -> {
             for (Player recp : Bukkit.getOnlinePlayers()) {
-                System.out.println(recp);
                 if (recp.hasPermission("root.ding") 
                         && UserDataProvider.getOrCreateUser(recp).matchDingPattern(evt.getMessage())) {
                     for (int i = 0; i < 16; i++) {

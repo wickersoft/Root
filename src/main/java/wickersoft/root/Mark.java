@@ -13,10 +13,10 @@ import org.bukkit.entity.Player;
  * @author Dennis
  */
 public class Mark {
-
-    private String authorName;
-    private String message;
-    private long created;
+    
+    private final String authorName;
+    private final String message;
+    private final long created;
     private long expires;
     private int priority;
 
@@ -36,6 +36,7 @@ public class Mark {
         }
         this.message = message;
         created = System.currentTimeMillis();
+        expires = created + 60 * 86400 * 1000;
         priority = 0;
     }
 
@@ -71,10 +72,9 @@ public class Mark {
         YamlConfiguration yaml = YamlConfiguration.emptyConfiguration();
         yaml.set("authorName", authorName);
         yaml.set("message", message);
-        yaml.set("creates", created);
+        yaml.set("created", created);
         yaml.set("expires", expires);
         yaml.set("priority", priority);
         return yaml;
     }
-
 }

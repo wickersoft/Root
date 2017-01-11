@@ -4,6 +4,9 @@ version: 3.1.4
 author: Wickersoft+Syndek
 
 commands:
+  activity:
+    description: Find out when to expect a player online
+    permission: root.activity
   ding:
     description: Plays a "Ding" sound when a chat message matches the specified pattern
     permission: root.ding
@@ -24,6 +27,9 @@ commands:
   lore:
     description: Edit an item's lore
     permission: root.lore
+  mark:
+    description: Keep notes on a player
+    permission: root.mark
   name:
     description: Edit an item's name
     permission: root.name
@@ -64,6 +70,7 @@ permissions:
     description: Gives access to all features in Root.
     children:
       root: true
+      root.activity: true
       root.chat.*: true
       root.ding: true
       root.freeze: true
@@ -72,7 +79,7 @@ permissions:
       root.inventory.*: true
       root.kleinbottle: true
       root.lore: true
-      root.mail: true
+      root.mark: true
       root.name: true
       root.notify.*: true
       root.nv: true
@@ -115,6 +122,7 @@ permissions:
       root.notify.firstjoin: true
       root.notify.flykick: true
       root.notify.iprec: true
+      root.notify.mark: true
       root.notify.xray: true
   
   root.player.*:

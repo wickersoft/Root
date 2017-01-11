@@ -28,6 +28,7 @@ public class ELFEffects implements Runnable {
     }
 
     public void run() {
+        calendar.setTimeInMillis(System.currentTimeMillis());
         int hour = calendar.get(Calendar.HOUR_OF_DAY);
         int fixedDay = (calendar.get(Calendar.DAY_OF_WEEK) + 5) % 7;
         int month = calendar.get(Calendar.MONTH);
@@ -36,5 +37,6 @@ public class ELFEffects implements Runnable {
             UserDataProvider.getOrCreateUser(player).incrementActivityStatistic(hour, fixedDay, month);
         }
         Tesseract.garbageCollect();
+        UserDataProvider.garbageCollect();
     }
 }
