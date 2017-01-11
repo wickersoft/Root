@@ -131,7 +131,7 @@ public class WatcherPlayer implements Listener {
         if (evt.getReason().equals("Flying is not enabled on this server")) {
             Bukkit.broadcast(ChatColor.RED + "Player " + evt.getPlayer().getName() + " was kicked for flying!", "root.notify.flykick");
         }
-        if (evt.getReason().equals("disconnect.spam") && evt.getPlayer().hasPermission("root.chat.bypassdisconnectspam")) {
+        if (evt.getReason().equals("disconnect.spam") && evt.getPlayer().hasPermission("root.chat.nodisconnectspam")) {
             evt.setCancelled(true);
         }
     }
@@ -143,7 +143,6 @@ public class WatcherPlayer implements Listener {
             launcher.cancel();
         }
         UserData data = UserDataProvider.getOrCreateUser(evt.getPlayer());
-        data.saveData();
     }
 
     @EventHandler

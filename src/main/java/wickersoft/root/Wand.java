@@ -22,8 +22,7 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
-import syn.root.user.UserData;
-import syn.root.user.UserDataProvider;
+import org.bukkit.metadata.FixedMetadataValue;
 
 /**
  *
@@ -137,15 +136,16 @@ public class Wand {
                 return;
             }
 
-            UserData data = UserDataProvider.getOrCreateUser(evt.getPlayer());
-            if (data.getClipboard() != null && data.getClipboard() instanceof Entity
-                    && data.getClipboard() != evt.getRightClicked()) {
-                evt.getRightClicked().addPassenger((Entity) data.getClipboard());
-                evt.getPlayer().sendMessage(ChatColor.GRAY + "Passenger selected");
-                data.setClipboard(null);
+            if (evt.getPlayer().hasMetadata("root.clipboard.stack")) {
+                Entity e = (Entity) evt.getPlayer().getMetadata("root.clipboard.stack").get(0).value();
+                if (e != evt.getRightClicked()) {
+                    evt.getRightClicked().addPassenger(e);
+                    evt.getPlayer().sendMessage(ChatColor.GRAY + "Passenger selected");
+                    evt.getPlayer().removeMetadata("root.clipboard.stack", Root.instance());
+                }
             } else {
-                evt.getPlayer().sendMessage(ChatColor.GRAY + "Passenger mounted");
-                data.setClipboard(evt.getRightClicked());
+                evt.getPlayer().setMetadata("root.clipboard.stack", new FixedMetadataValue(Root.instance(), evt.getRightClicked()));
+                evt.getPlayer().sendMessage(ChatColor.GRAY + "Passenger selected");
             }
         }
     }

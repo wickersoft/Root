@@ -6,6 +6,7 @@
 package wickersoft.root;
 
 import com.earth2me.essentials.Essentials;
+import com.griefcraft.lwc.LWCPlugin;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import java.io.File;
 import java.io.IOException;
@@ -17,8 +18,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 import org.bukkit.Bukkit;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
-import org.bukkit.plugin.Plugin;
 
 /**
  *
@@ -26,6 +27,7 @@ import org.bukkit.plugin.Plugin;
  */
 public class Storage {
 
+    public static final BlockFace[] CARDINAL_FACES = {BlockFace.NORTH, BlockFace.WEST, BlockFace.SOUTH, BlockFace.EAST};
     public static final HashMap<String, String> INFO_SIGNS = new HashMap<>();
     public static final HashMap<String, String> LANGUAGE_ALIASES = new HashMap<>();
     public static final HashMap<String, Petition> PETITIONS = new HashMap<>();
@@ -35,17 +37,18 @@ public class Storage {
     public static final String[] KNOWN_LANGCODES = {
         "en", "de", "da", "sv", "no", "fr", "es"
     };
-    
 
     public static boolean INV_SAVE_AUTO_OVERWRITE;
     public static int MAX_SLURP_RANGE;
     public static int DEFAULT_SLURP_RANGE;
     public static int TRANSLATION_TIMEOUT;
     public static long XRAY_WARN_TIME;
+    public static boolean DEBUG;
     public static MessageDigest md5;
 
     public static Essentials essentials = (Essentials) Bukkit.getPluginManager().getPlugin("Essentials");
     public static WorldGuardPlugin worldguard = (WorldGuardPlugin) Bukkit.getPluginManager().getPlugin("WorldGuard");
+    public static LWCPlugin lwc = (LWCPlugin) Bukkit.getPluginManager().getPlugin("LWC");
 
     public static void loadData() {
         YamlConfiguration fc = YamlConfiguration.read(new File(Root.instance().getDataFolder(), "config.yml"));
@@ -54,7 +57,8 @@ public class Storage {
         TRANSLATION_TIMEOUT = fc.getInt("translation-timeout", 2000);
         INV_SAVE_AUTO_OVERWRITE = fc.getBoolean("inv-save-auto-overwrite", true);
         XRAY_WARN_TIME = fc.getInt("xray-warn-time", 900000);
-        
+        DEBUG = fc.getBoolean("debug", false);
+
         List<Map> shortcuts = fc.getList("shortcuts", Map.class);
         SHORTCUTS.clear();
         shortcuts.forEach((map) -> {
@@ -64,7 +68,6 @@ public class Storage {
             }
         });
 
-        
         INFO_SIGNS.clear();
         YamlConfiguration.read(new File(Root.instance().getDataFolder(), "infosigns.yml")).forEach(
                 (key, value) -> {
@@ -73,7 +76,6 @@ public class Storage {
                     }
                 });
 
-        
         PETITIONS.clear();
         YamlConfiguration petitionData = YamlConfiguration.read(new File(Root.instance().getDataFolder(), "petitions.yml"));
         petitionData.keySet().forEach((key) -> {
@@ -85,8 +87,7 @@ public class Storage {
 
     public static void saveData() {
         YamlConfiguration yaml = YamlConfiguration.emptyConfiguration();
-        
-        
+
         PETITIONS.forEach(
                 (name, petition) -> {
                     yaml.put(name, petition.getSignatures());
@@ -98,8 +99,6 @@ public class Storage {
         }
         yaml.clear();
 
-        
-        
         INFO_SIGNS.forEach(
                 (name, value) -> {
                     yaml.put(name, value);

@@ -7,6 +7,7 @@ package wickersoft.root;
 
 import java.util.HashMap;
 import java.util.LinkedList;
+import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.ChatColor;
 
 /**
@@ -16,8 +17,37 @@ import org.bukkit.ChatColor;
 public class StringUtil {
 
     private static final char[] HEX_CHARS = {0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x61, 0x62, 0x63, 0x64, 0x65, 0x66};
+    private static final char[] BASE64_CHARS
+            = {'0', '1', '2', '3', '4', '5', '6', '7',
+                '8', '9', 'A', 'B', 'C', 'D', 'E', 'F',
+                'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
+                'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V',
+                'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd',
+                'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l',
+                'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
+                'u', 'v', 'w', 'x', 'y', 'z', '+', '/'};
 
     private static final HashMap<Character, Integer> CHAR_WIDTHS = new HashMap<>();
+
+    public static long getBase64Bits(String source, int start, int end) {
+        return getBase64Bits(source.toCharArray(), start, end);
+    }
+    
+    public static long getBase64Bits(char[] source, int start, int end) {
+        long result = 0;
+        for (int i = start; i < end; i++) {
+            result |= ((long) (ArrayUtils.indexOf(BASE64_CHARS, source[i])) << (6 * (end - i - 1)));
+        }
+        return result;
+    }
+
+    public static String toBase64(long bits, int fixedLength) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = fixedLength - 1; i >= 0; i--) {
+            sb.append(BASE64_CHARS[(int) ((bits >> (6 * i)) & 0x3FL)]);
+        }
+        return sb.toString();
+    }
 
     public static String joinAndFormat(String[] args, int startIndex) {
         StringBuilder sb = new StringBuilder();

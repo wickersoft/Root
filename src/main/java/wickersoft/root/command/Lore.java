@@ -12,8 +12,10 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.metadata.FixedMetadataValue;
 import syn.root.user.UserData;
 import syn.root.user.UserDataProvider;
+import wickersoft.root.Root;
 import wickersoft.root.StringUtil;
 
 /**
@@ -174,37 +176,27 @@ public class Lore extends PlayerCommand {
             player.sendMessage(ChatColor.RED + "Error: " + ChatColor.GRAY + "There is no lore on this item");
             return false;
         }
-        UserData data = UserDataProvider.getOrCreateUser(player);
-        data.setClipboard(lore);
+        player.setMetadata("root.clipboard.lore", new FixedMetadataValue(Root.instance(), lore));
         player.sendMessage(ChatColor.GRAY + "Lore copied");
         return false;
     }
 
     private boolean pasteLore(List<String> lore, Player player) {
-        UserData data = UserDataProvider.getOrCreateUser(player);
-        if (data.getClipboard() != null) {
-            if (data.getClipboard() instanceof List) {
-                List list = (List) data.getClipboard();
-                if (!list.isEmpty()) {
-                    if (list.get(0) instanceof String) {
-                        list = (List<String>) list;
-                        lore.clear();
-                        lore.addAll(list);
-                        return true;
-                    }
-                    player.sendMessage(ChatColor.RED + "Error: " + ChatColor.GRAY + "Your clipboard does not contain lore");
-                    return false;
-                }
-            }
+        if (player.hasMetadata("root.clipboard.lore")) {
+            List<String> list = (List<String>) player.getMetadata("root.clipboard.lore").get(0).value();
+            lore.clear();
+            lore.addAll(list);
+            player.sendMessage(ChatColor.GRAY + "Lore pasted");
+            return true;
         }
         player.sendMessage(ChatColor.RED + "Error: " + ChatColor.GRAY + "Your clipboard is empty");
         return false;
     }
-    
+
     public String getSyntax() {
         return "/lore";
     }
-    
+
     public String getDescription() {
         return "Edits an item's lore";
     }

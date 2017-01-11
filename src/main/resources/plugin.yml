@@ -35,6 +35,13 @@ commands:
     description: View information about a player
     aliases: [p]
     permission: root.player
+  seelwc:
+    description: Highlights nearby blocks protected by LWC
+    permission: root.seelwc
+  shadowmute:
+    description: Makes a player's messages only visible to that player
+    aliases: [smute]
+    permission: root.shadowmute
   slurp:
     description: Pick up items and XP orbs around you.
     permission: root.slurp
@@ -70,6 +77,8 @@ permissions:
       root.notify.*: true
       root.nv: true
       root.player.*: true
+      root.seelwc: true
+      root.shadowmute: true
       root.sign.*: true
       root.slurp: true
       root.sub: true
@@ -81,8 +90,8 @@ permissions:
   root.chat.*:
     children:
       root.chat: true
-      root.chat.bypassspam: true
-      root.chat.bypassdisconnectspam: true
+      root.chat.nospam: true
+      root.chat.nodisconnectspam: true
   
   root.freeze.*:
     description: Gives access to the freeze feature of Root and its bypass.

@@ -5,6 +5,7 @@ Here I will detail the plugin's functionality including commands, use cases, per
 
 ###Antispam:
 Root currently has no automatic chat filtering or autokick.
+The permission *root.chat.nodisconnectspam* allows users to send chat messages and commands quickly without being automatically kicked by the server's internal flooding protection.
 
 ###Ding:
 Players can configure alerts for the occurrence of certain patterns in chat. See Commands/Ding for usage
@@ -81,6 +82,15 @@ Still has its old functionality.
 Note: Can now list a user's homes.
 Aliases: /p
 Permission: *root.player*, *root.player.homes*
+
+###/shadowmute [player]
+Makes a player's chat messages only visible to that player.
+Aliases: /smute
+Permission: *root.shadowmute*
+
+###/seelwc [radius]
+Highlights nearby blocks protected by the LWC plugin.
+Permission: *root.seelwc*
 
 ###/slurp [radius]
 Absorbs all items and XP in the given radius. Limits can be set in the configuration file.

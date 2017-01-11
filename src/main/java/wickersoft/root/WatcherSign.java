@@ -39,7 +39,6 @@ import org.bukkit.util.Vector;
  */
 public class WatcherSign implements Listener {
 
-    private static final BlockFace[] CARDINAL_FACES = {BlockFace.NORTH, BlockFace.WEST, BlockFace.SOUTH, BlockFace.EAST};
     private static final HashSet<Block> INSTANT_SIGNS = new HashSet<>();
     private static final HashMap<Block, Integer> DROPPER_POWER_CACHE = new HashMap<>();
     private static final WatcherSign INSTANCE = new WatcherSign();
@@ -62,7 +61,7 @@ public class WatcherSign implements Listener {
         if (oldPower != null && oldPower == 0 && power > 0) { // Positive redstone edge on a dropper
             Dropper dropper = (Dropper) dropperBlock.getState();
             boolean tesseractApplied = false;
-            for (BlockFace face : CARDINAL_FACES) {
+            for (BlockFace face : Storage.CARDINAL_FACES) {
                 if (Tesseract.isTesseract(dropperBlock.getRelative(face))) {
                     Sign sign = (Sign) dropperBlock.getRelative(face).getState();
                     Tesseract tesseract = new Tesseract(sign);
