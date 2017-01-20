@@ -1,9 +1,10 @@
 package wickersoft.root;
 
 import java.net.URLEncoder;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.scheduler.BukkitRunnable;
 import syn.root.user.UserData;
 import wickersoft.root.HTTP.HTTPResponse;
@@ -12,39 +13,48 @@ public class TaskGeoQuery extends BukkitRunnable {
 
     private final UserData data;
     private final String ip;
-    private final boolean broadcast;
+    private final boolean detailed;
+    private final Consumer<Map<Object, Object>> callback;
 
-    public TaskGeoQuery(UserData data, boolean isFirstJoin) {
+    public TaskGeoQuery(UserData data, boolean detailed, Consumer<Map<Object, Object>> callback) {
         this.data = data;
         this.ip = data.getIp();
-        this.broadcast = isFirstJoin;
+        this.detailed = detailed;
+        this.callback = callback;
     }
 
     @Override
     public void run() {
-        String geoLocation;
+        Map<Object, Object> resultData = new HashMap<>();
+
         try {
             HTTPResponse queryResponse = HTTP.http("http://www.geoplugin.net/php.gp?ip=" + URLEncoder.encode(ip, "UTF-8"), 3000);
             String geoResponse = new String(queryResponse.content);
             SerializedPhpParser serializedPhpParser = new SerializedPhpParser(geoResponse);
 
-            Map<Object, Object> qqq = (Map<Object, Object>) serializedPhpParser.parse();
-            geoLocation = (String) qqq.get("geoplugin_regionName") 
-                    + ", " +(String) qqq.get("geoplugin_countryName");
+            resultData.putAll((Map<Object, Object>) serializedPhpParser.parse());
+
+            String latitude = (String) resultData.get("geoplugin_latitude");
+            String longitude = (String) resultData.get("geoplugin_longitude");
+
+            HTTPResponse mapsResponse = HTTP.http("https://maps.googleapis.com/maps/api/timezone/json?"
+                    + "location=" + latitude + "," + longitude
+                    + "&timestamp=" + System.currentTimeMillis() / 1000
+                    + "&key=" + Storage.GOOGLE_MAPS_API_KEY,
+                    3000);
+            String mapsData = new String(mapsResponse.content);
+            String timezone = StringUtil.extract(mapsData, "\"timeZoneId\" : \"", "\",");
+            if(timezone == null) {
+                timezone = "Unknown";
+            }
+            resultData.put("maps_timezone", timezone);
         } catch (Exception ex) {
             System.err.println("Exception making GeoQuery for Player " + data.getName() + ":");
-            geoLocation = "Unknown: IO Error";
             ex.printStackTrace();
         }
 
-        final String finalGeoLocation = geoLocation;
         Bukkit.getScheduler().scheduleSyncDelayedTask(Root.instance(), () -> {
-            data.setGeoLocation(finalGeoLocation);
-            if (broadcast) {
-                Bukkit.broadcast(ChatColor.BLUE + data.getName() + ChatColor.GRAY + ": " 
-                        + ChatColor.BLUE + ip + ChatColor.GRAY + " / " 
-                        + ChatColor.BLUE + finalGeoLocation, "root.notify.firstjoin");
-            }
+            callback.accept(resultData);
         });
     }
 }

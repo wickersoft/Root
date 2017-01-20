@@ -31,7 +31,8 @@ public class SpecialItemUtil {
         }
         ItemMeta meta = signStack.getItemMeta();
         meta.setLore(lore);
-        signStack.setItemMeta(meta);
+        signStack.setItemMeta(meta);        
+        
         return signStack;
     }
     

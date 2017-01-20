@@ -19,8 +19,8 @@ import wickersoft.root.StringUtil;
 public class Activity extends Command {
 
     private static final String[] HEATMAP_SCALE = {
-        //ChatColor.BOLD + " " + ChatColor.RESET + " ",
-        ChatColor.DARK_GRAY + "\u2591",
+        "  ",
+        //ChatColor.DARK_GRAY + "\u2591",
         ChatColor.BLACK + "\u2591",
         ChatColor.DARK_RED + "\u2591",
         ChatColor.RED + "\u2591",
@@ -94,15 +94,15 @@ public class Activity extends Command {
                 int boxCharIndex = 8 * weeklyMetrics[24 * wDay + i] / weekMax;
                 sb.append(HEATMAP_SCALE[boxCharIndex]);
             }
-            sb.append("  ");
+            sb.append(PIPE).append("  ");
             sb.append(LEGEND[wDay]);
             sender.sendMessage(sb.toString());
         }
         StringBuilder sb = new StringBuilder();
-        sb.append("    ");
+        sb.append("        ");
 
         for (int i = 0; i < currentHour; i++) {
-            sb.append(" ").append(ChatColor.BOLD).append(" ").append(ChatColor.RESET);
+            sb.append("  ");
         }
         sb.append(ChatColor.YELLOW).append("^").append(currentHour).append("h");
         sender.sendMessage(sb.toString());

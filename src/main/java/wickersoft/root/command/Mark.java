@@ -35,7 +35,7 @@ public class Mark extends Command {
                 sender.sendMessage(ChatColor.DARK_GRAY + " - " + ChatColor.GRAY + "(none)");
                 return true;
             }
-            for (wickersoft.root.Mark mark : data.getMarks()) {
+            for (syn.root.user.Mark mark : data.getMarks()) {
                 if (mark.getPriority() == 0) {
                     sender.sendMessage(ChatColor.DARK_GRAY + " - " + ChatColor.DARK_AQUA + mark.getAuthor()
                             + ChatColor.DARK_GRAY + ": " + ChatColor.GRAY + mark.getMessage());
@@ -52,7 +52,7 @@ public class Mark extends Command {
         }
         if (!args[1].matches("\\d{1,3}")) {
             String markMessage = StringUtils.join(args, ' ', 1, args.length);
-            wickersoft.root.Mark mark = new wickersoft.root.Mark(sender, markMessage);
+            syn.root.user.Mark mark = new syn.root.user.Mark(sender, markMessage);
             data.addMark(mark);
             sender.sendMessage(ChatColor.GRAY + "Mark " + data.getMarks().size() + " created");
             return true;
@@ -62,7 +62,7 @@ public class Mark extends Command {
             sender.sendMessage(ChatColor.GRAY + "Invalid mark ID");
             return true;
         }
-        wickersoft.root.Mark mark = data.getMarks().get(markId);
+        syn.root.user.Mark mark = data.getMarks().get(markId);
         boolean changed = false;
         for (int i = 2; i < args.length; i++) {
             switch (args[i]) {
@@ -89,7 +89,7 @@ public class Mark extends Command {
         return true;
     }
 
-    private boolean applyChanges(wickersoft.root.Mark mark, String argument) {
+    private boolean applyChanges(syn.root.user.Mark mark, String argument) {
         String[] parameters = argument.split(":");
         if (parameters.length == 2) {
             switch (parameters[0].toLowerCase()) {

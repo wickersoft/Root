@@ -70,6 +70,7 @@ public class Inv extends PlayerCommand {
                 String[] inventories = InventoryProvider.listInventories(uuid);
                 if (inventories == null || inventories.length == 0) {
                     player.sendMessage(ChatColor.GRAY + " (none)");
+                    player.sendMessage("");
                 } else {
                     StringBuilder sb = new StringBuilder();
                     sb.append(" ");
@@ -86,7 +87,6 @@ public class Inv extends PlayerCommand {
                     player.sendMessage("");
                     player.sendMessage(StringUtil.generateHLineTitle("Page " + listPage + " of " + numPages));
                 }
-                player.sendMessage("");
                 //player.sendMessage(ChatColor.DARK_GRAY + "" + ChatColor.STRIKETHROUGH
                 //        + "                                                                                ");
                 break;

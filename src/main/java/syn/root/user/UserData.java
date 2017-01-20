@@ -12,7 +12,6 @@ import java.util.logging.Level;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 import org.bukkit.block.Block;
-import wickersoft.root.Mark;
 import wickersoft.root.Root;
 import wickersoft.root.StringUtil;
 import wickersoft.root.YamlConfiguration;
@@ -29,6 +28,8 @@ public class UserData {
     private boolean frozen = false;
     private boolean shadowmuted = false;
     private String geoLocation = "Unknown";
+    private String preciseGeoLocation = "Unknown";
+    private String timeZone = "Unknown";
     private final ArrayList<Mark> marks = new ArrayList<>();
     private String subtitleLangPair = "";
     private String lastKnownIp = "Unknown";
@@ -56,7 +57,7 @@ public class UserData {
         this.uuid = uuid;
         dataFile = new File(Root.instance().getDataFolder(), "users/" + uuid + "/playerdata.yml");
     }
-    
+
     public int addMark(Mark mark) {
         touch();
         marks.add(mark);
@@ -74,19 +75,11 @@ public class UserData {
     public String getIp() {
         return lastKnownIp;
     }
-    
+
     public List<Mark> getMarks() {
         return marks;
     }
-    
-    public int[] getWeeklyMetrics() {
-        return weeklyMetrics;
-    }
 
-    public int[] getYearlyMetrics() {
-        return yearlyMetrics;
-    }
-    
     public String getName() {
         return lastKnownName;
     }
@@ -95,12 +88,28 @@ public class UserData {
         return playerInstance;
     }
 
+    public String getPreciseGeoLocation() {
+        return preciseGeoLocation;
+    }
+
     public String getSubtitleLangPair() {
         return subtitleLangPair;
     }
 
+    public String getTimezone() {
+        return timeZone;
+    }
+
     public UUID getUUID() {
         return uuid;
+    }
+
+    public int[] getWeeklyMetrics() {
+        return weeklyMetrics;
+    }
+
+    public int[] getYearlyMetrics() {
+        return yearlyMetrics;
     }
 
     public void incrementActivityStatistic(int hour, int dayOfWeek, int month) {
@@ -130,10 +139,10 @@ public class UserData {
     }
 
     public boolean matchDingPattern(String message) {
-        return dingPattern != null 
+        return dingPattern != null
                 && dingPattern.matcher(message).find();
     }
-    
+
     public void removeMark(int markIndex) {
         touch();
         marks.remove(markIndex);
@@ -174,6 +183,13 @@ public class UserData {
         }
     }
 
+    public void setIp(String newIp) {
+        if (!this.lastKnownIp.equals(newIp)) {
+            touch();
+            this.lastKnownIp = newIp;
+        }
+    }
+
     public void setName(String newName) {
         if (!this.lastKnownName.equals(newName)) {
             touch();
@@ -181,10 +197,10 @@ public class UserData {
         }
     }
 
-    public void setIp(String newIp) {
-        if (!this.lastKnownIp.equals(newIp)) {
+    public void setPreciseGeoLocation(String geoLocation) {
+        if (!this.preciseGeoLocation.equals(geoLocation)) {
             touch();
-            this.lastKnownIp = newIp;
+            this.preciseGeoLocation = geoLocation;
         }
     }
 
@@ -196,6 +212,10 @@ public class UserData {
     public void setSubtitleLangPair(String subtitleLangPair) {
         touch();
         this.subtitleLangPair = subtitleLangPair;
+    }
+
+    public void setTimezone(String timeZone) {
+        this.timeZone = timeZone;
     }
 
     public void setUndercover(boolean undercover) {
@@ -226,6 +246,8 @@ public class UserData {
         YamlConfiguration yaml = YamlConfiguration.read(dataFile);
         frozen = yaml.getBoolean("frozen", false);
         geoLocation = yaml.getString("geolocation", "Unknown");
+        preciseGeoLocation = yaml.getString("preciseGeolocation", "Unknown");
+        timeZone = yaml.getString("timezone", "Unknown");
         lastKnownName = yaml.getString("name", "Unknown");
         lastKnownIp = yaml.getString("ip", "Unknown");
         shadowmuted = yaml.getBoolean("shadowmuted", false);
@@ -263,7 +285,7 @@ public class UserData {
     }
 
     protected void saveData() {
-        if(!dirty) {
+        if (!dirty) {
             return;
         }
         YamlConfiguration yaml = YamlConfiguration.emptyConfiguration();
@@ -271,6 +293,8 @@ public class UserData {
         yaml.set("name", lastKnownName);
         yaml.set("ip", lastKnownIp);
         yaml.set("geolocation", geoLocation);
+        yaml.set("preciseGeolocation", preciseGeoLocation);
+        yaml.set("timezone", timeZone);
         yaml.set("frozen", frozen);
         yaml.set("shadowmuted", shadowmuted);
         yaml.set("undercover", undercover);

@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
 
@@ -38,6 +39,9 @@ public class Storage {
         "en", "de", "da", "sv", "no", "fr", "es"
     };
 
+    public static String UNDERCOVER_CHAT_FORMAT;
+    public static String MYMEMORY_TRANSLATED_NET_API_KEY;
+    public static String GOOGLE_MAPS_API_KEY;
     public static boolean INV_SAVE_AUTO_OVERWRITE;
     public static int MAX_SLURP_RANGE;
     public static int DEFAULT_SLURP_RANGE;
@@ -53,15 +57,19 @@ public class Storage {
 
     public static void loadData() {
         YamlConfiguration fc = YamlConfiguration.read(new File(Root.instance().getDataFolder(), "config.yml"));
+        UNDERCOVER_CHAT_FORMAT = ChatColor.translateAlternateColorCodes('&',
+                fc.getString("undercover-chat-format", "<%1$s> %2$s"));
+        MYMEMORY_TRANSLATED_NET_API_KEY = fc.getString("mymemory-translated-net-api-key", "");
+        GOOGLE_MAPS_API_KEY = fc.getString("google-maps-api-key", "");
         MAX_SLURP_RANGE = fc.getInt("max-slurp-range", 100);
         DEFAULT_SLURP_RANGE = fc.getInt("default-slurp-range", 16);
         TRANSLATION_TIMEOUT = fc.getInt("translation-timeout", 2000);
         INV_SAVE_AUTO_OVERWRITE = fc.getBoolean("inv-save-auto-overwrite", true);
         XRAY_WARN_TIME = fc.getInt("xray-warn-time-millis", 900000);
-        MAX_DEATH_INV_AGE_MILLIS = fc.getInt("max-death-inventory-age-days", 14) * 14 * 86400 * 1000 ;
+        MAX_DEATH_INV_AGE_MILLIS = fc.getLong("max-death-inventory-age-days", 14) * 14 * 86400 * 1000;
         DEBUG = fc.getBoolean("debug", false);
 
-        List<Map> shortcuts = fc.getList("shortcuts", Map.class);
+        List<YamlConfiguration> shortcuts = fc.getSectionList("shortcuts");
         SHORTCUTS.clear();
         shortcuts.forEach((map) -> {
             if (map.containsKey("replace") && map.containsKey("with")

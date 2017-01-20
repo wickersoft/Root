@@ -47,6 +47,7 @@ public class WatcherChat implements Listener {
         }
 
         if (data.isUndercover()) {
+            evt.setFormat(Storage.UNDERCOVER_CHAT_FORMAT);
             evt.getPlayer().setDisplayName(evt.getPlayer().getName());
         }
 
@@ -56,11 +57,13 @@ public class WatcherChat implements Listener {
 
         Bukkit.getScheduler().scheduleSyncDelayedTask(Root.instance(), () -> {
             for (Player recp : Bukkit.getOnlinePlayers()) {
-                if (recp.hasPermission("root.ding") 
+                if (recp.hasPermission("root.ding")
                         && UserDataProvider.getOrCreateUser(recp).matchDingPattern(evt.getMessage())) {
                     for (int i = 0; i < 16; i++) {
-                        recp.playSound(evt.getPlayer().getLocation(), Sound.BLOCK_NOTE_PLING, 1, 1.5f);
                         recp.playSound(evt.getPlayer().getLocation(), Sound.BLOCK_NOTE_PLING, 1, 2f);
+                    }
+                    for (int i = 0; i < 4; i++) {
+                        recp.playSound(evt.getPlayer().getLocation(), Sound.BLOCK_NOTE_PLING, 1, 1.5f);
                     }
                 }
             }
@@ -89,7 +92,7 @@ public class WatcherChat implements Listener {
         try {
             String trans = new String(
                     HTTP.http("http://mymemory.translated.net/api/get?langpair="
-                            + langpair + "&de=dennis.wickersheim%40gmail.com&q="
+                            + langpair + "&de=" + Storage.MYMEMORY_TRANSLATED_NET_API_KEY + "&q="
                             + URLEncoder.encode(message, "UTF-8"), Storage.TRANSLATION_TIMEOUT).content);
             String translated = parse(trans);
             return translated;

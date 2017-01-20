@@ -1,19 +1,17 @@
-## YAML Template.
+undercover-chat-format: &8<&f%1$s&8> &f%2$s
+mymemory-translated-net-api-key: ''
+google-maps-api-key: ''
 max-slurp-range: 100
 default-slurp-range: 16
-max-fill-range: 32
-default-fill-range: 8
-max-fill-amount: 256
-default-fill-amount: 64
 xray-warn-time-millis: 900000
 max-death-inventory-age-days: 14
 inv-save-auto-overwrite: true
 shortcuts:
-  - replace: "^\/iload\b"
+  - replace: "^/iload\b"
     with: "/inv load"
-  - replace: "^\/isave\b"
+  - replace: "^/isave\b"
     with: "/inv save"
-  - replace: "^\/ilist\b"
+  - replace: "^/ilist\b"
     with: "/inv list"
-  - replace: "^\/j\b"
+  - replace: "^/j\b"
     with: "/jump"

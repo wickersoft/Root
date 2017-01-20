@@ -7,6 +7,9 @@ commands:
   activity:
     description: Find out when to expect a player online
     permission: root.activity
+  causelag:
+    description: Causes (only) a player's game to grind to a halt
+    permissions: root.causelag
   ding:
     description: Plays a "Ding" sound when a chat message matches the specified pattern
     permission: root.ding
@@ -23,7 +26,7 @@ commands:
     permission: root.inventory
   kleinbottle:
     description: Generates an item that can instantly transfer all of a Tesseract's contents
-    permission: root.kleinbottle 
+    permission: root.kleinbottle
   lore:
     description: Edit an item's lore
     permission: root.lore
@@ -71,6 +74,7 @@ permissions:
     children:
       root: true
       root.activity: true
+      root.causelag: true
       root.chat.*: true
       root.ding: true
       root.freeze: true
@@ -129,6 +133,7 @@ permissions:
     children:
       root.player: true
       root.player.homes: true
+      root.player.preciselocation: true
   
   root.sign.*:
     children:
@@ -155,6 +160,11 @@ permissions:
       root.sign.info: true  
       root.sign.info.create: true
       root.sign.info.edit: true
+      
+  root.sign.launch.*:
+    children:
+      root.sign.launch: true
+      root.sign.launch.create: true
   
   root.sign.lift.*:
     children:

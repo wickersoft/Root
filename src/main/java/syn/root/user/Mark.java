@@ -3,10 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package wickersoft.root;
+package syn.root.user;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import wickersoft.root.YamlConfiguration;
 
 /**
  *

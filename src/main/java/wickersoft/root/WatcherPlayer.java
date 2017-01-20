@@ -5,6 +5,7 @@
  */
 package wickersoft.root;
 
+import syn.root.user.Mark;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -52,7 +53,7 @@ public class WatcherPlayer implements Listener {
     @EventHandler
     public void onBlockBreak(BlockBreakEvent evt) {
         UserData data = UserDataProvider.getOrCreateUser(evt.getPlayer());
-        if (data.isFrozen()) {
+        if (data.isFrozen() && !evt.getPlayer().hasPermission("root.freeze.bypass")) {
             evt.setCancelled(true);
         }
 
@@ -71,7 +72,7 @@ public class WatcherPlayer implements Listener {
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent evt) {
         UserData data = UserDataProvider.getOrCreateUser(evt.getPlayer());
-        if (data.isFrozen()) {
+        if (data.isFrozen() && !evt.getPlayer().hasPermission("root.freeze.bypass")) {
             evt.setCancelled(true);
         }
     }
@@ -82,7 +83,7 @@ public class WatcherPlayer implements Listener {
             return;
         }
         Player player = (Player) evt.getDamager();
-        if (UserDataProvider.getOrCreateUser(player).isFrozen()) {
+        if (UserDataProvider.getOrCreateUser(player).isFrozen() && !player.hasPermission("root.freeze.bypass")) {
             evt.setCancelled(true);
         }
     }
@@ -92,28 +93,27 @@ public class WatcherPlayer implements Listener {
         long currentMillis = System.currentTimeMillis();
         File[] allInventoryFiles = InventoryProvider.getInventoryFiles(evt.getEntity().getUniqueId());
         for (File file : allInventoryFiles) {
-            if (file.getName().startsWith("_death-")
+            if (file.getName().startsWith("_death_")
                     && currentMillis - file.lastModified() > Storage.MAX_DEATH_INV_AGE_MILLIS) {
                 file.delete(); // Clean up old death inventories
             }
         }
 
-        
-        String deathInventoryName = "_death-" + DEATH_INVENTORY_DATE_FORMAT.format(Date.from(Instant.ofEpochMilli(currentMillis)));
+        String deathInventoryName = "_death_" + DEATH_INVENTORY_DATE_FORMAT.format(Date.from(Instant.ofEpochMilli(currentMillis)));
         File deathInventoryFile = InventoryProvider.getInventoryFile(evt.getEntity(), deathInventoryName);
         InventoryProvider.saveInventory(evt.getEntity(), deathInventoryFile);
     }
 
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent evt) {
-        if (UserDataProvider.getOrCreateUser(evt.getPlayer()).isFrozen()) {
+        if (UserDataProvider.getOrCreateUser(evt.getPlayer()).isFrozen() && !evt.getPlayer().hasPermission("root.freeze.bypass")) {
             evt.setCancelled(true);
         }
     }
 
     @EventHandler
     public void onPlayerInteract(PlayerInteractEntityEvent evt) {
-        if (UserDataProvider.getOrCreateUser(evt.getPlayer()).isFrozen()) {
+        if (UserDataProvider.getOrCreateUser(evt.getPlayer()).isFrozen() && !evt.getPlayer().hasPermission("root.freeze.bypass")) {
             evt.setCancelled(true);
         }
     }
@@ -133,19 +133,37 @@ public class WatcherPlayer implements Listener {
                 Bukkit.broadcast(ChatColor.RED + "Player " + evt.getPlayer().getName() + " has Marks! " + ChatColor.GRAY + ChatColor.ITALIC + "[/mark " + data.getName() + "]", "root.notify.mark");
             }
         }
-        new TaskGeoQuery(data, !evt.getPlayer().hasPlayedBefore()).runTaskAsynchronously(Root.instance());
+        
+        
+        new TaskGeoQuery(data, false, (geoData) -> {
+            String geoLocation = (String) geoData.getOrDefault("geoplugin_countryName", "GeoQuery Error");
+            String preciseGeoLocation = (String) geoData.getOrDefault("geoplugin_city", "Unknown") + ", "
+                    + (String) geoData.getOrDefault("geoplugin_regionName", "Unknown") + ", "
+                    + geoLocation;
+            geoLocation = org.apache.commons.lang3.StringEscapeUtils.unescapeHtml4(geoLocation);
+            preciseGeoLocation = org.apache.commons.lang3.StringEscapeUtils.unescapeHtml4(preciseGeoLocation);
+            String timezone = (String) geoData.getOrDefault("maps_timezone", "GeoQuery Error");
+            data.setGeoLocation(geoLocation);
+            data.setPreciseGeoLocation(preciseGeoLocation);
+            data.setTimezone(timezone);
+            if (!evt.getPlayer().hasPlayedBefore()) {
+                Bukkit.broadcast(ChatColor.BLUE + data.getName() + ChatColor.GRAY + ": "
+                        + ChatColor.BLUE + ip + ChatColor.GRAY + " / "
+                        + ChatColor.BLUE + geoLocation, "root.notify.firstjoin");
+            }
+        }).runTaskAsynchronously(Root.instance());
     }
 
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent evt) {
-        if (UserDataProvider.getOrCreateUser(evt.getPlayer()).isFrozen()) {
+        if (UserDataProvider.getOrCreateUser(evt.getPlayer()).isFrozen() && !evt.getPlayer().hasPermission("root.freeze.bypass")) {
             evt.setCancelled(true);
         }
     }
 
     @EventHandler
     public void onItemPickup(PlayerPickupItemEvent evt) {
-        if (UserDataProvider.getOrCreateUser(evt.getPlayer()).isFrozen()) {
+        if (UserDataProvider.getOrCreateUser(evt.getPlayer()).isFrozen() && !evt.getPlayer().hasPermission("root.freeze.bypass")) {
             evt.setCancelled(true);
         } else if ((!evt.getPlayer().hasPermission("root.item.volatile")
                 && SpecialItemUtil.isVolatile(evt.getItem().getItemStack()))
@@ -180,7 +198,7 @@ public class WatcherPlayer implements Listener {
             TaskLaunchPlayer launcher = (TaskLaunchPlayer) evt.getPlayer().getMetadata("root.task.launch").get(0).value();
             launcher.cancel();
         }
-        if (UserDataProvider.getOrCreateUser(evt.getPlayer()).isFrozen()) {
+        if (UserDataProvider.getOrCreateUser(evt.getPlayer()).isFrozen() && !evt.getPlayer().hasPermission("root.freeze.bypass")) {
             evt.setCancelled(true);
         }
     }
