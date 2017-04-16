@@ -21,8 +21,10 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.SignChangeEvent;
@@ -110,6 +112,13 @@ public class WatcherSign implements Listener {
                     }
                 }
             }
+        }
+    }
+
+    @EventHandler
+    public void signBreak(BlockBreakEvent evt) {
+        if (isSign(evt.getBlock()) && Tesseract.isTesseract(evt.getBlock())) {
+            evt.setCancelled(true);
         }
     }
 
@@ -234,12 +243,12 @@ public class WatcherSign implements Listener {
         return true;
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOW)
     public void click(PlayerInteractEvent evt) {
         if (evt.getHand() != EquipmentSlot.HAND) {
             return;
         }
-        if ((evt.getClickedBlock() != null && (evt.getClickedBlock().getTypeId() == 68 || evt.getClickedBlock().getTypeId() == 63))) {
+        if ((evt.getClickedBlock() != null && isSign(evt.getClickedBlock()))) {
             evt.setCancelled(!processSignInteraction(evt.getPlayer(), evt.getClickedBlock(), evt.getAction()));
         } else if ((evt.getAction() == Action.RIGHT_CLICK_AIR && isSign(evt.getPlayer().getTargetBlock((HashSet<Material>) null, 5)))) {
             evt.setCancelled(!processSignInteraction(evt.getPlayer(), evt.getPlayer().getTargetBlock((HashSet<Material>) null, 5), Action.RIGHT_CLICK_BLOCK));
@@ -258,18 +267,19 @@ public class WatcherSign implements Listener {
                     if (isSign(block)) {
                         Sign sgn = (Sign) block.getState();
                         if (sgn.getLine(1).equals("[Lift Down]")) {
-                            Location loc = Util.getLiftDestination(player.getLocation(), sgn.getLocation());
+                            Location loc = Util.getLiftDestination(player.getLocation(), sign.getLocation(), sgn.getLocation());
                             if (loc == null) {
                                 player.sendMessage(ChatColor.GRAY + "This Lift is not safe to use!");
                             } else {
                                 player.teleport(loc);
+                                player.updateInventory();
                             }
-                            return false;
+                            return true;
                         }
                     }
                 }
                 player.sendMessage(ChatColor.GRAY + "This Lift sign is not linked!");
-                return false;
+                return true;
             case "[Lift Down]":
                 if (action != Action.RIGHT_CLICK_BLOCK || !player.hasPermission("root.sign.lift")) {
                     return true;
@@ -279,25 +289,26 @@ public class WatcherSign implements Listener {
                     if (isSign(block)) {
                         Sign sgn = (Sign) block.getState();
                         if (sgn.getLine(1).equals("[Lift Up]")) {
-                            Location loc = Util.getLiftDestination(player.getLocation(), sgn.getLocation());
+                            Location loc = Util.getLiftDestination(player.getLocation(), sign.getLocation(), sgn.getLocation());
                             if (loc == null) {
                                 player.sendMessage(ChatColor.GRAY + "This Lift is not safe to use!");
                             } else {
                                 player.teleport(loc);
+                                player.updateInventory();
                             }
-                            return false;
+                            return true;
                         }
                     }
                 }
                 player.sendMessage(ChatColor.GRAY + "This Lift sign is not linked!");
-                return false;
+                return true;
             case "\u00A71[Cart]":
                 if (!player.hasPermission("root.sign.cart")) {
                     player.sendMessage(ChatColor.GRAY + "You do not have permission to use these Signs!");
                     return true;
                 }
                 if (action != Action.RIGHT_CLICK_BLOCK) {
-                    return true;
+                    return false;
                 }
                 Location lctn;
                 switch (sign.getBlock().getData()) {
@@ -320,14 +331,14 @@ public class WatcherSign implements Listener {
                 cart.setPassenger(player);
                 cart.setMaxSpeed(Double.parseDouble(sign.getLine(2)) / 20);
                 Storage.VEHICLES.add(cart);
-                return false;
+                return true;
             case "\u00A71[Boat]":
                 if (!player.hasPermission("root.sign.boat")) {
                     player.sendMessage(ChatColor.GRAY + "You do not have permission to use these Signs!");
                     return true;
                 }
                 if (action != Action.RIGHT_CLICK_BLOCK) {
-                    return true;
+                    return false;
                 }
                 switch (sign.getBlock().getData()) {
                     case 3:
@@ -348,7 +359,7 @@ public class WatcherSign implements Listener {
                 Boat boat = (Boat) clickedBlock.getWorld().spawnEntity(lctn, EntityType.BOAT);
                 boat.setPassenger(player);
                 Storage.VEHICLES.add(boat);
-                return false;
+                return true;
         }
         switch (sign.getLine(0)) {
             case "\u00A71[Tesseract]":
@@ -427,7 +438,7 @@ public class WatcherSign implements Listener {
                 }
                 if (action != Action.RIGHT_CLICK_BLOCK
                         && action != Action.RIGHT_CLICK_AIR) {
-                    return true;
+                    return false;
                 }
 
                 if (player.hasMetadata("root.task.launch")) {
@@ -439,14 +450,14 @@ public class WatcherSign implements Listener {
                 TaskLaunchPlayer launcher = new TaskLaunchPlayer(player, new Location(player.getWorld(), x, y, z));
                 launcher.runTaskTimer(Root.instance(), 2, 2);
                 player.setMetadata("root.task.launch", new FixedMetadataValue(Root.instance(), launcher));
-                return false;
+                return true;
             case "\u00A71[Petition]":
                 if (!player.hasPermission("root.sign.petition")) {
                     player.sendMessage(ChatColor.GRAY + "You do not have permission to use these Signs!");
                     return true;
                 }
                 if (action != Action.RIGHT_CLICK_BLOCK) {
-                    return true;
+                    return false;
                 }
 
                 Petition p = Storage.PETITIONS.get(sign.getLine(1));
@@ -465,20 +476,20 @@ public class WatcherSign implements Listener {
                 }
                 sign.setLine(2, "" + ChatColor.GREEN + p.getNumberOfSignatures() + " Signatures");
                 sign.update();
-                return false;
+                return true;
         }
         return true;
     }
 
-    private boolean isSign(Block block) {
+    public static boolean isSign(Block block) {
         return block.getType() == Material.SIGN_POST || block.getType() == Material.WALL_SIGN;
     }
 
-    private boolean isSign(Location loc) {
+    public static boolean isSign(Location loc) {
         return isSign(loc.getWorld().getBlockAt(loc));
     }
 
-    public String padding(String number, int length) {
+    public static String padding(String number, int length) {
         while (number.length() < length) {
             number = "0" + number;
         }

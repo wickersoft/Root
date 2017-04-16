@@ -42,7 +42,8 @@ public class Player extends Command {
             return true;
         }
         org.bukkit.entity.Player player = data.getPlayerInstance();
-        if (player != null) {
+        
+        if (player != null && player.isOnline()) {
             sender.sendMessage(StringUtil.generateHLineTitle(player.getName()
                     + (player.isOp() ? ChatColor.RED + " (Op)" : ""))
             );
@@ -74,7 +75,7 @@ public class Player extends Command {
 
         if (Storage.essentials != null) {
             YamlConfiguration yaml = YamlConfiguration.read(new File(Storage.essentials.getDataFolder(), "userdata/" + data.getUUID() + ".yml"));
-            if (player == null) {
+            if (player == null || !player.isOnline()) {
                 YamlConfiguration logoutLoc = yaml.getOrCreateSection("logoutlocation");
                 String logoutLocString = StringUtil.padToWidthMod(logoutLoc.getString("world", "unknown"), 16)
                         + ChatColor.DARK_GRAY + " / "

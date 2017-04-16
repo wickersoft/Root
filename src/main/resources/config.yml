@@ -1,4 +1,4 @@
-undercover-chat-format: &8<&f%1$s&8> &f%2$s
+undercover-chat-format: '&8<&f%1$s&8> &f%2$s'
 mymemory-translated-net-api-key: ''
 google-maps-api-key: ''
 max-slurp-range: 100

@@ -42,6 +42,7 @@ public class Storage {
     public static String UNDERCOVER_CHAT_FORMAT;
     public static String MYMEMORY_TRANSLATED_NET_API_KEY;
     public static String GOOGLE_MAPS_API_KEY;
+    public static String BAN_APPEAL_MESSAGE;
     public static boolean INV_SAVE_AUTO_OVERWRITE;
     public static int MAX_SLURP_RANGE;
     public static int DEFAULT_SLURP_RANGE;
@@ -61,6 +62,7 @@ public class Storage {
                 fc.getString("undercover-chat-format", "<%1$s> %2$s"));
         MYMEMORY_TRANSLATED_NET_API_KEY = fc.getString("mymemory-translated-net-api-key", "");
         GOOGLE_MAPS_API_KEY = fc.getString("google-maps-api-key", "");
+        BAN_APPEAL_MESSAGE = fc.getString("ban-appeal-message", "");
         MAX_SLURP_RANGE = fc.getInt("max-slurp-range", 100);
         DEFAULT_SLURP_RANGE = fc.getInt("default-slurp-range", 16);
         TRANSLATION_TIMEOUT = fc.getInt("translation-timeout", 2000);

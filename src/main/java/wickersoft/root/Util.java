@@ -75,10 +75,9 @@ public class Util {
         return getCenter(blk.getLocation(), centerVertical);
     }
 
-    public static Location getLiftDestination(Location originalPlayerLoc, Location destinationLiftLoc) {
-        Block block = originalPlayerLoc.getWorld().getBlockAt(originalPlayerLoc.getBlockX(),
-                destinationLiftLoc.getBlockY(), originalPlayerLoc.getBlockZ());
-        for (int i = 0; i++ < 3 && block.getY() > 0; block = block.getRelative(BlockFace.DOWN)) {
+    public static Location getLiftDestination(Location originalPlayerLoc, Location startLiftLoc, Location destinationLiftLoc) {
+        Block block = originalPlayerLoc.getWorld().getBlockAt(originalPlayerLoc.getBlockX(), destinationLiftLoc.getBlockY() + 1, originalPlayerLoc.getBlockZ());
+        for (int i = 0; i++ < 5 && block.getY() > 0; block = block.getRelative(BlockFace.DOWN)) {
             if (isBlockSafeToStand(block)) {
                 return block.getLocation().add(.5, 1, .5).setDirection(originalPlayerLoc.getDirection());
             }
@@ -86,8 +85,8 @@ public class Util {
         if (destinationLiftLoc.getBlockY() == 0) {
             return null;
         }
-        block = originalPlayerLoc.getWorld().getBlockAt(destinationLiftLoc);
-        for (int i = 0; i++ < 3 && block.getY() > 0; block = block.getRelative(BlockFace.DOWN)) {
+        block = originalPlayerLoc.getWorld().getBlockAt(destinationLiftLoc.getBlockX(), destinationLiftLoc.getBlockY() + 1, destinationLiftLoc.getBlockZ());
+        for (int i = 0; i++ < 5 && block.getY() > 0; block = block.getRelative(BlockFace.DOWN)) {
             if (isBlockSafeToStand(block)) {
                 return block.getLocation().add(.5, 1, .5).setDirection(originalPlayerLoc.getDirection());
             }
@@ -98,7 +97,7 @@ public class Util {
     public static boolean isBlockSafeToStand(Block block) {
         if (block.getType().isSolid()) {
             for (int i = 0; i++ < 2 && block.getY() < 255;) {
-                if ((block = block.getRelative(BlockFace.UP)).getType().isSolid()) {
+                if ((block = block.getRelative(BlockFace.UP)).getType().isSolid() && !WatcherSign.isSign(block)) {
                     return false;
                 }
             }

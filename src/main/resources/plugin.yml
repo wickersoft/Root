@@ -128,6 +128,7 @@ permissions:
       root.notify.iprec: true
       root.notify.mark: true
       root.notify.xray: true
+      root.notify.xray.bypass: true
   
   root.player.*:
     children:

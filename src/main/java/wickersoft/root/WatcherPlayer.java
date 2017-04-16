@@ -13,18 +13,23 @@ import java.util.Date;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
+import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -55,13 +60,16 @@ public class WatcherPlayer implements Listener {
         UserData data = UserDataProvider.getOrCreateUser(evt.getPlayer());
         if (data.isFrozen() && !evt.getPlayer().hasPermission("root.freeze.bypass")) {
             evt.setCancelled(true);
+            return;
         }
 
-        if (evt.getBlock().getY() <= 16 && evt.getBlock().getType() == Material.DIAMOND_ORE) {
+        if (!evt.isCancelled() && evt.getBlock().getY() <= 16 && evt.getBlock().getType() == Material.DIAMOND_ORE
+                && !evt.getPlayer().hasPermission("root.notify.xray.bypass")) {
             long xrayTest = data.testXrayWarnTime();
             if (xrayTest < Storage.XRAY_WARN_TIME) {
                 long minutes = xrayTest / 60000;
                 long seconds = (xrayTest / 1000) % 60;
+
                 Bukkit.broadcast(ChatColor.RED + "Player " + evt.getPlayer().getName() + " has mined 20 Diamond Ore in "
                         + minutes + " minutes and " + seconds + " seconds!", "root.notify.xray");
                 data.resetXrayWarnTime();
@@ -118,8 +126,20 @@ public class WatcherPlayer implements Listener {
         }
     }
 
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onPreLogin(PlayerLoginEvent evt) {
+        System.out.print(evt);
+        if (evt.getResult() != PlayerLoginEvent.Result.ALLOWED) {
+            String kickMessage = evt.getKickMessage();
+            kickMessage += "\n\n";
+            kickMessage += Storage.BAN_APPEAL_MESSAGE;
+            evt.setKickMessage(kickMessage);
+        }
+    }
+
     @EventHandler
     public void onJoin(PlayerJoinEvent evt) {
+        
         String ip = evt.getPlayer().getAddress().getAddress().getHostAddress();
         UserData data = UserDataProvider.getOrCreateUser(evt.getPlayer());
         data.setName(evt.getPlayer().getName());
@@ -133,8 +153,7 @@ public class WatcherPlayer implements Listener {
                 Bukkit.broadcast(ChatColor.RED + "Player " + evt.getPlayer().getName() + " has Marks! " + ChatColor.GRAY + ChatColor.ITALIC + "[/mark " + data.getName() + "]", "root.notify.mark");
             }
         }
-        
-        
+
         new TaskGeoQuery(data, false, (geoData) -> {
             String geoLocation = (String) geoData.getOrDefault("geoplugin_countryName", "GeoQuery Error");
             String preciseGeoLocation = (String) geoData.getOrDefault("geoplugin_city", "Unknown") + ", "
@@ -176,8 +195,16 @@ public class WatcherPlayer implements Listener {
     @EventHandler
     public void onKick(PlayerKickEvent evt) {
         if (evt.getReason().equals("Flying is not enabled on this server")) {
-            Bukkit.broadcast(ChatColor.RED + "Player " + evt.getPlayer().getName() + " was kicked for flying!", "root.notify.flykick");
+            Block block = evt.getPlayer().getLocation().getBlock();
+            int altitude = 0;
+            while (block.getY() > 0 && block.getType() == Material.AIR) {
+                block = block.getRelative(BlockFace.DOWN);
+                altitude++;
+            }
+            Bukkit.broadcast(ChatColor.RED + evt.getPlayer().getName() + " was kicked for flying! Altitiude: "
+                    + altitude + "  (" + block.getX() + " " + block.getY() + " " + block.getZ() + ")", "root.notify.flykick");
         }
+
         if (evt.getReason().equals("disconnect.spam") && evt.getPlayer().hasPermission("root.chat.nodisconnectspam")) {
             evt.setCancelled(true);
         }
