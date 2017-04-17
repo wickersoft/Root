@@ -13,13 +13,11 @@ public class TaskGeoQuery extends BukkitRunnable {
 
     private final UserData data;
     private final String ip;
-    private final boolean detailed;
     private final Consumer<Map<Object, Object>> callback;
 
     public TaskGeoQuery(UserData data, boolean detailed, Consumer<Map<Object, Object>> callback) {
         this.data = data;
         this.ip = data.getIp();
-        this.detailed = detailed;
         this.callback = callback;
     }
 

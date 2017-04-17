@@ -128,7 +128,6 @@ public class WatcherPlayer implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPreLogin(PlayerLoginEvent evt) {
-        System.out.print(evt);
         if (evt.getResult() != PlayerLoginEvent.Result.ALLOWED) {
             String kickMessage = evt.getKickMessage();
             kickMessage += "\n\n";
