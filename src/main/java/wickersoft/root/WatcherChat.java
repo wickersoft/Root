@@ -42,7 +42,13 @@ public class WatcherChat implements Listener {
             evt.setCancelled(true);
             Bukkit.getScheduler().scheduleSyncDelayedTask(Root.instance(), () -> {
                 player.sendMessage(String.format(evt.getFormat(), evt.getPlayer().getDisplayName(), evt.getMessage()));
+                for(Player recp : Bukkit.getOnlinePlayers()) {
+                    if(recp.hasPermission("root.shadowmute.see")) {
+                        player.sendMessage(String.format(Storage.SHADOWMUTE_SEE_CHAT_FORMAT, evt.getPlayer().getDisplayName(), evt.getMessage()));
+                    }
+                }
             });
+            
             return;
         }
 

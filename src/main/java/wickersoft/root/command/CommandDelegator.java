@@ -45,11 +45,13 @@ public class CommandDelegator {
         DELEGATIONS.put("name", new Name());
         DELEGATIONS.put("nv", new Nv());
         DELEGATIONS.put("player", new Player());
+        DELEGATIONS.put("portal", new Portal());
         DELEGATIONS.put("shadowmute", new Shadowmute());
         DELEGATIONS.put("slurp", new Slurp());
         DELEGATIONS.put("seelwc", new Seelwc());
         DELEGATIONS.put("sub", new Sub());
         DELEGATIONS.put("undercover", new Undercover());
+        DELEGATIONS.put("uuid", new Uuid());
         DELEGATIONS.put("volatile", new Volatile());
         DELEGATIONS.put("wand", new Wand());
     }

@@ -61,6 +61,9 @@ commands:
     description: Go undercover and hide your chat formatting.
     permission: root.undercover
     aliases: [u]
+  uuid:
+    description: Shows UUID, current and past names of a player.
+    permission: root.uuid
   volatile:
     description: Makes an item impossible to pick up for Players without a certain permission
     permission: root.volatile
@@ -95,6 +98,7 @@ permissions:
       root.sub: true
       root.tricorder.*: true
       root.undercover: true
+      root.uuid: true
       root.volatile: true
       root.wand.*: true
       

@@ -200,6 +200,7 @@ public class WatcherPlayer implements Listener {
                 block = block.getRelative(BlockFace.DOWN);
                 altitude++;
             }
+            block = evt.getPlayer().getLocation().getBlock();
             Bukkit.broadcast(ChatColor.RED + evt.getPlayer().getName() + " was kicked for flying! Altitiude: "
                     + altitude + "  (" + block.getX() + " " + block.getY() + " " + block.getZ() + ")", "root.notify.flykick");
         }

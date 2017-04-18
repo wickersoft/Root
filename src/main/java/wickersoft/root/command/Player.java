@@ -42,17 +42,19 @@ public class Player extends Command {
             return true;
         }
         org.bukkit.entity.Player player = data.getPlayerInstance();
-        
+
         if (player != null && player.isOnline()) {
             sender.sendMessage(StringUtil.generateHLineTitle(player.getName()
                     + (player.isOp() ? ChatColor.RED + " (Op)" : ""))
             );
+            sender.sendMessage("");
             String ip = player.getAddress().getAddress().getHostAddress();
             sender.sendMessage(format("IP Address", ip));
         } else {
             OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(data.getUUID());
             sender.sendMessage(StringUtil.generateHLineTitle(data.getName() + ChatColor.GRAY + " (Offline)"
                     + (offlinePlayer.isOp() ? ChatColor.RED + " (Op)" : "")));
+            sender.sendMessage("");
         }
 
         if (sender.hasPermission("root.player.preciselocation")) {
@@ -67,7 +69,7 @@ public class Player extends Command {
             String localTime = LOCAL_TIME_FORMAT.format(Date.from(Instant.ofEpochMilli(System.currentTimeMillis())));
             sender.sendMessage(format("Local Time", localTime));
         }
-        
+
         sender.sendMessage(format("Frozen", data.isFrozen()));
         sender.sendMessage(format("Shadowmuted", data.isShadowmuted()));
         sender.sendMessage(format("Undercover", data.isUndercover()));

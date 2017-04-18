@@ -40,6 +40,7 @@ public class Storage {
     };
 
     public static String UNDERCOVER_CHAT_FORMAT;
+    public static String SHADOWMUTE_SEE_CHAT_FORMAT;
     public static String MYMEMORY_TRANSLATED_NET_API_KEY;
     public static String GOOGLE_MAPS_API_KEY;
     public static String BAN_APPEAL_MESSAGE;
@@ -60,6 +61,8 @@ public class Storage {
         YamlConfiguration fc = YamlConfiguration.read(new File(Root.instance().getDataFolder(), "config.yml"));
         UNDERCOVER_CHAT_FORMAT = ChatColor.translateAlternateColorCodes('&',
                 fc.getString("undercover-chat-format", "<%1$s> %2$s"));
+        SHADOWMUTE_SEE_CHAT_FORMAT = ChatColor.translateAlternateColorCodes('&',
+                fc.getString("shadowmute-see-chat-format", "&8<%1&8$s> &8%2$s"));
         MYMEMORY_TRANSLATED_NET_API_KEY = fc.getString("mymemory-translated-net-api-key", "");
         GOOGLE_MAPS_API_KEY = fc.getString("google-maps-api-key", "");
         BAN_APPEAL_MESSAGE = fc.getString("ban-appeal-message", "");
