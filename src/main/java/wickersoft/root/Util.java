@@ -120,6 +120,13 @@ public class Util {
                 && Storage.worldguard.getRegionManager(block.getWorld())
                         .getApplicableRegions(block.getLocation()).size() != 0;
     }
+    
+    public static boolean showBlock(int x, int y, int z, int entityId, Player player) {
+        if (!nmsDetected) {
+            return false;
+        }
+        return fakeEntitySender.showHighlightBlock(x, y, z, entityId, player, false);
+    }
 
     public static boolean showHighlightBlocks(List<Block> blocks, Player player) {
         for (Block block : blocks) {
@@ -138,7 +145,7 @@ public class Util {
         }
         return true;
     }
-
+    
     public static boolean showHighlightBlock(Block block, Player player) {
         if (!nmsDetected) {
             return false;
@@ -157,13 +164,17 @@ public class Util {
 
         private FakeEntitySender() {
         }
-
+        
         public boolean showHighlightBlock(Block block, Player player) {
+            int entityId = 2000000000 + (block.hashCode()) % 10000000;
+            return showHighlightBlock(block.getX(), block.getY(), block.getZ(), entityId, player, true);
+        }
+
+        public boolean showHighlightBlock(int x, int y, int z, int entityId, Player player, boolean glow) {
             if (!nmsDetected) {
                 return false;
             }
-
-            int entityId = 2000000000 + (block.hashCode()) % 10000000;
+            
             PacketPlayOutSpawnEntity ppose = new PacketPlayOutSpawnEntity();
             Class clazz = ppose.getClass();
 
@@ -178,13 +189,13 @@ public class Util {
                 // Position
                 f = clazz.getDeclaredField("c");
                 f.setAccessible(true);
-                f.setDouble(ppose, block.getX() + 0.5);
+                f.setDouble(ppose, x + 0.5);
                 f = clazz.getDeclaredField("d");
                 f.setAccessible(true);
-                f.setDouble(ppose, block.getY());
+                f.setDouble(ppose, y);
                 f = clazz.getDeclaredField("e");
                 f.setAccessible(true);
-                f.setDouble(ppose, block.getZ() + 0.5);
+                f.setDouble(ppose, z + 0.5);
                 // Velocity
                 f = clazz.getDeclaredField("f");
                 f.setAccessible(true);
@@ -208,7 +219,7 @@ public class Util {
                 f.setInt(ppose, 70); // minecraft:falling_block
                 f = clazz.getDeclaredField("l");
                 f.setAccessible(true);
-                f.setInt(ppose, 1); // Stone:0
+                f.setInt(ppose, glow ? 1 : 36); // Stone:0
 
             } catch (NoSuchFieldException | IllegalAccessException ex) {
                 ex.printStackTrace();
@@ -217,7 +228,7 @@ public class Util {
 
             DataWatcherObject<Byte> dwo0 = new DataWatcherObject<>(0, DataWatcherRegistry.a); // Indicating a metadata value of type Byte at index 0
             DataWatcherObject<Boolean> dwo5 = new DataWatcherObject<>(5, DataWatcherRegistry.h); // Indicating a metadata value of type Boolean at index 5
-            DataWatcher.Item<Byte> dwi0 = new DataWatcher.Item<>(dwo0, (byte) 0x60); // A Metadata item of type Byte with value 0x60
+            DataWatcher.Item<Byte> dwi0 = new DataWatcher.Item<>(dwo0, glow ? (byte) 0x60 : (byte) 0x00); // A Metadata item of type Byte with value 0x60
             DataWatcher.Item<Boolean> dwi5 = new DataWatcher.Item<>(dwo5, true); // A Metadata item of type Boolean with value true
 
             List<DataWatcher.Item> dwiList = new ArrayList<>();

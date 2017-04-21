@@ -7,9 +7,9 @@ commands:
   activity:
     description: Find out when to expect a player online
     permission: root.activity
-  causelag:
+  crash:
     description: Causes (only) a player's game to grind to a halt
-    permissions: root.causelag
+    permissions: root.crash
   ding:
     description: Plays a "Ding" sound when a chat message matches the specified pattern
     permission: root.ding
@@ -77,7 +77,7 @@ permissions:
     children:
       root: true
       root.activity: true
-      root.causelag: true
+      root.crash: true
       root.chat.*: true
       root.ding: true
       root.freeze: true
