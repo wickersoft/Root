@@ -4,18 +4,20 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import net.minecraft.server.v1_11_R1.DataWatcher;
-import net.minecraft.server.v1_11_R1.DataWatcherRegistry;
-import net.minecraft.server.v1_11_R1.DataWatcherObject;
-import net.minecraft.server.v1_11_R1.EntityPlayer;
-import net.minecraft.server.v1_11_R1.PacketPlayOutEntityDestroy;
-import net.minecraft.server.v1_11_R1.PacketPlayOutEntityMetadata;
-import net.minecraft.server.v1_11_R1.PacketPlayOutSpawnEntity;
+import net.minecraft.server.v1_12_R1.DataWatcher;
+import net.minecraft.server.v1_12_R1.DataWatcherRegistry;
+import net.minecraft.server.v1_12_R1.DataWatcherObject;
+import net.minecraft.server.v1_12_R1.EntityPlayer;
+import net.minecraft.server.v1_12_R1.PacketPlayOutChat;
+import net.minecraft.server.v1_12_R1.PacketPlayOutEntityDestroy;
+import net.minecraft.server.v1_12_R1.PacketPlayOutEntityMetadata;
+import net.minecraft.server.v1_12_R1.PacketPlayOutSpawnEntity;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.v1_11_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_12_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
 public class Util {
@@ -76,7 +78,7 @@ public class Util {
     }
 
     public static Location getLiftDestination(Location originalPlayerLoc, Location startLiftLoc, Location destinationLiftLoc) {
-        Block block = originalPlayerLoc.getWorld().getBlockAt(originalPlayerLoc.getBlockX(), destinationLiftLoc.getBlockY() + 1, originalPlayerLoc.getBlockZ());
+        Block block = originalPlayerLoc.getWorld().getBlockAt(originalPlayerLoc.getBlockX(), destinationLiftLoc.getBlockY(), originalPlayerLoc.getBlockZ());
         for (int i = 0; i++ < 5 && block.getY() > 0; block = block.getRelative(BlockFace.DOWN)) {
             if (isBlockSafeToStand(block)) {
                 return block.getLocation().add(.5, 1, .5).setDirection(originalPlayerLoc.getDirection());
@@ -120,7 +122,7 @@ public class Util {
                 && Storage.worldguard.getRegionManager(block.getWorld())
                         .getApplicableRegions(block.getLocation()).size() != 0;
     }
-    
+
     public static boolean showBlock(int x, int y, int z, int entityId, Player player) {
         if (!nmsDetected) {
             return false;
@@ -145,7 +147,12 @@ public class Util {
         }
         return true;
     }
-    
+
+    public static boolean sendRawMessage(String message, Player player) {
+        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "tellraw " + player.getName() + " " + message);
+        return true;
+    }
+
     public static boolean showHighlightBlock(Block block, Player player) {
         if (!nmsDetected) {
             return false;
@@ -164,7 +171,7 @@ public class Util {
 
         private FakeEntitySender() {
         }
-        
+
         public boolean showHighlightBlock(Block block, Player player) {
             int entityId = 2000000000 + (block.hashCode()) % 10000000;
             return showHighlightBlock(block.getX(), block.getY(), block.getZ(), entityId, player, true);
@@ -174,7 +181,7 @@ public class Util {
             if (!nmsDetected) {
                 return false;
             }
-            
+
             PacketPlayOutSpawnEntity ppose = new PacketPlayOutSpawnEntity();
             Class clazz = ppose.getClass();
 

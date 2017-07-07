@@ -48,6 +48,10 @@ public class Player extends Command {
                     + (player.isOp() ? ChatColor.RED + " (Op)" : ""))
             );
             sender.sendMessage("");
+            
+            int nearbyEntities = player.getNearbyEntities(100, 300, 100).size();
+            sender.sendMessage(format("Nearby Entities", nearbyEntities));
+            
             String ip = player.getAddress().getAddress().getHostAddress();
             sender.sendMessage(format("IP Address", ip));
         } else {

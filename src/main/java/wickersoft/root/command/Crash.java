@@ -35,12 +35,15 @@ public class Crash extends Command {
 
         int intensity = 1;
 
-        if (args.length >= 2 && args[1].matches("[0-9]{1,2}")) {
+        if (args.length >= 2 && args[1].matches("[0-9]{1,5}")) {
             intensity = Integer.parseInt(args[1]);
         }
 
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(Root.instance(), new TaskCrash(player, intensity), 1, 1);
-        sender.sendMessage(ChatColor.GRAY + "Crashing player " + ChatColor.BLUE + player.getName() 
+        TaskCrash taskCrash = new TaskCrash(player, intensity);
+        int id = Bukkit.getScheduler().scheduleSyncRepeatingTask(Root.instance(), taskCrash, 1, 1);
+        taskCrash.setId(id);
+
+        sender.sendMessage(ChatColor.GRAY + "Crashing player " + ChatColor.BLUE + player.getName()
                 + ChatColor.GRAY + " with intensity " + ChatColor.BLUE + intensity + ChatColor.GRAY + "..");
         return true;
     }

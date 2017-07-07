@@ -8,6 +8,7 @@ package wickersoft.root;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -66,8 +67,10 @@ public class WatcherSign implements Listener {
             for (BlockFace face : Storage.CARDINAL_FACES) {
                 if (Tesseract.isTesseract(dropperBlock.getRelative(face))) {
                     Sign sign = (Sign) dropperBlock.getRelative(face).getState();
-                    Tesseract tesseract = new Tesseract(sign);
-                    tesseractApplied |= tesseract.storeInventory(dropper.getInventory());
+                    Tesseract tesseract = Tesseract.fromSign(sign);
+                    if (tesseractApplied |= Tesseract.storeInventory(dropper.getInventory(), tesseract)) {
+                        tesseract.writeToSign(sign, tesseractApplied);
+                    }
                 }
             }
             if (tesseractApplied) {
@@ -84,12 +87,11 @@ public class WatcherSign implements Listener {
             Block attachedBlock = signBlock.getRelative(signData.getAttachedFace());
             if (!attachedBlock.getType().isSolid()) {
                 Sign sign = (Sign) signBlock.getState();
-                Tesseract tesseract = new Tesseract(sign);
-                if (tesseract.isValid() && !tesseract.isEmpty()) {
-                    ItemStack stack = tesseract.drop();
-                    evt.setCancelled(true);
-                    sign.getWorld().dropItem(sign.getLocation().add(0.5, 0, 0.5), stack).setItemStack(stack);
-                }
+                Tesseract tesseract = Tesseract.fromSign(sign);
+                ItemStack stack = tesseract.drop();
+                evt.setCancelled(true);
+                sign.getWorld().dropItem(sign.getLocation().add(0.5, 0, 0.5), stack).setItemStack(stack);
+                sign.getBlock().setType(Material.AIR);
             }
         }
     }
@@ -239,6 +241,17 @@ public class WatcherSign implements Listener {
                 }
                 evt.setLine(0, "\u00A71[Petition]");
                 break;
+            case "[dice]":
+                if (!evt.getPlayer().hasPermission("root.sign.dice.create")) {
+                    break;
+                }
+                if (!evt.getLine(1).matches("\\d{1,3}")) {
+                    evt.setLine(1, "6");
+                }
+                evt.setLine(0, ChatColor.DARK_BLUE + "[Dice]");
+                evt.setLine(2, "");
+                evt.setLine(3, ChatColor.GREEN + "You rolled: " + ChatColor.DARK_GREEN + ChatColor.BOLD + "-");
+                break;
         }
         return true;
     }
@@ -303,12 +316,12 @@ public class WatcherSign implements Listener {
                 player.sendMessage(ChatColor.GRAY + "This Lift sign is not linked!");
                 return true;
             case "\u00A71[Cart]":
+                if (action != Action.RIGHT_CLICK_BLOCK) {
+                    return false;
+                }
                 if (!player.hasPermission("root.sign.cart")) {
                     player.sendMessage(ChatColor.GRAY + "You do not have permission to use these Signs!");
                     return true;
-                }
-                if (action != Action.RIGHT_CLICK_BLOCK) {
-                    return false;
                 }
                 Location lctn;
                 switch (sign.getBlock().getData()) {
@@ -333,12 +346,12 @@ public class WatcherSign implements Listener {
                 Storage.VEHICLES.add(cart);
                 return true;
             case "\u00A71[Boat]":
+                if (action != Action.RIGHT_CLICK_BLOCK) {
+                    return false;
+                }
                 if (!player.hasPermission("root.sign.boat")) {
                     player.sendMessage(ChatColor.GRAY + "You do not have permission to use these Signs!");
                     return true;
-                }
-                if (action != Action.RIGHT_CLICK_BLOCK) {
-                    return false;
                 }
                 switch (sign.getBlock().getData()) {
                     case 3:
@@ -367,21 +380,26 @@ public class WatcherSign implements Listener {
                 if (!Util.canBuild(player, clickedBlock)) {
                     return true;
                 }
-                long timer = System.nanoTime();
-                Tesseract tesseract = new Tesseract(sign);
-                if (!tesseract.isValid()) {
-                    tesseract.updateSign(false);
+
+                if (!Tesseract.isTesseract(clickedBlock)) {
+                    sign.setLine(0, ChatColor.RED + "[Tesseract]");
+                    sign.update();
                     return true;
                 }
 
+                Tesseract tesseract = Tesseract.fromSign(sign);
+
                 if (player.hasPermission("root.item.kleinbottle") && Tesseract.isKleinBottle(player.getInventory().getItemInMainHand())) {
-                    ItemStack bottle = player.getInventory().getItemInMainHand();
-                    if (action == Action.LEFT_CLICK_BLOCK && !tesseract.isEmpty()) {
-                        bottle = tesseract.withdrawIntoKleinBottle(bottle);
-                    } else if (action == Action.RIGHT_CLICK_BLOCK && tesseract.isEmpty()) {
-                        bottle = tesseract.storeFromKleinBottle(bottle);
+                    ItemStack bottleItem = player.getInventory().getItemInMainHand();
+                    Tesseract bottle = Tesseract.fromKleinBottle(bottleItem);
+                    if (action == Action.LEFT_CLICK_BLOCK) {
+                        tesseract.fuseInto(bottle);
+                    } else if (action == Action.RIGHT_CLICK_BLOCK) {
+                        bottle.fuseInto(tesseract);
                     }
-                    player.getInventory().setItemInMainHand(bottle);
+                    bottle.writeToKleinBottle(bottleItem);
+                    tesseract.writeToSign(sign, false);
+                    player.getInventory().setItemInMainHand(bottleItem);
                     player.updateInventory();
                     return true;
                 }
@@ -394,13 +412,14 @@ public class WatcherSign implements Listener {
                         stack = tesseract.withdrawStack();
                     }
                     player.getWorld().dropItem(sign.getLocation().add(0.5, 0, 0.5), stack).setPickupDelay(0);
-
+                    tesseract.writeToSign(sign, false);
                 } else if (action == Action.RIGHT_CLICK_BLOCK) {
                     if ((Tesseract.isDoubleClick(player)
-                            && tesseract.storeInventory(player.getInventory()))
-                            || tesseract.storeStack(player.getInventory())) {
+                            && Tesseract.storeInventory(player.getInventory(), tesseract))
+                            || Tesseract.storeStack(player.getInventory(), tesseract)) {
                         player.updateInventory();
                     }
+                    tesseract.writeToSign(sign, false);
                     Tesseract.rememberClick(player);
                 }
                 return false;
@@ -432,13 +451,13 @@ public class WatcherSign implements Listener {
                 }
                 break;
             case "\u00A71[Launch]":
-                if (!player.hasPermission("root.sign.launch")) {
-                    player.sendMessage(ChatColor.GRAY + "You do not have permission to use these Signs!");
-                    return true;
-                }
                 if (action != Action.RIGHT_CLICK_BLOCK
                         && action != Action.RIGHT_CLICK_AIR) {
                     return false;
+                }
+                if (!player.hasPermission("root.sign.launch")) {
+                    player.sendMessage(ChatColor.GRAY + "You do not have permission to use these Signs!");
+                    return true;
                 }
 
                 if (player.hasMetadata("root.task.launch")) {
@@ -452,12 +471,12 @@ public class WatcherSign implements Listener {
                 player.setMetadata("root.task.launch", new FixedMetadataValue(Root.instance(), launcher));
                 return true;
             case "\u00A71[Petition]":
+                if (action != Action.RIGHT_CLICK_BLOCK) {
+                    return false;
+                }
                 if (!player.hasPermission("root.sign.petition")) {
                     player.sendMessage(ChatColor.GRAY + "You do not have permission to use these Signs!");
                     return true;
-                }
-                if (action != Action.RIGHT_CLICK_BLOCK) {
-                    return false;
                 }
 
                 Petition p = Storage.PETITIONS.get(sign.getLine(1));
@@ -475,6 +494,28 @@ public class WatcherSign implements Listener {
                     player.sendMessage(ChatColor.GRAY + " You have " + ChatColor.RED + "revoked " + ChatColor.GRAY + "your signature on this Petition!");
                 }
                 sign.setLine(2, "" + ChatColor.GREEN + p.getNumberOfSignatures() + " Signatures");
+                sign.update();
+                return true;
+            case "\u00A71[Dice]":
+                if (action != Action.RIGHT_CLICK_BLOCK) {
+                    return false;
+                }
+                if (!player.hasPermission("root.sign.dice")) {
+                    player.sendMessage(ChatColor.GRAY + "You do not have permission to use these Signs!");
+                    return true;
+                }
+                if (!sign.getLine(1).matches("\\d{1,3}")) {
+                    return false;
+                }
+                int range = Integer.parseInt(sign.getLine(1));
+                int roll = Storage.RANDOM.nextInt(range) + 1;
+                Bukkit.getScheduler().scheduleSyncDelayedTask(Root.instance(),
+                        () -> {
+                            sign.setLine(3, ChatColor.GREEN + "You rolled: " + ChatColor.DARK_GREEN + ChatColor.BOLD + roll);
+                            sign.update();
+                        }, 20);
+
+                sign.setLine(3, ChatColor.GREEN + "You rolled: " + ChatColor.DARK_GREEN + ChatColor.BOLD + ChatColor.MAGIC + "---");
                 sign.update();
                 return true;
         }

@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.regex.Pattern;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -35,6 +36,7 @@ public class Storage {
     public static final HashMap<Pattern, String> SHORTCUTS = new HashMap<>();
     public static final HashSet<Entity> VEHICLES = new HashSet<>();
     public static final HashMap<String, String> WARN_IPS = new HashMap<>();
+    public static final Random RANDOM = new Random();
     public static final String[] KNOWN_LANGCODES = {
         "en", "de", "da", "sv", "no", "fr", "es"
     };
@@ -71,7 +73,7 @@ public class Storage {
         TRANSLATION_TIMEOUT = fc.getInt("translation-timeout", 2000);
         INV_SAVE_AUTO_OVERWRITE = fc.getBoolean("inv-save-auto-overwrite", true);
         XRAY_WARN_TIME = fc.getInt("xray-warn-time-millis", 900000);
-        MAX_DEATH_INV_AGE_MILLIS = fc.getLong("max-death-inventory-age-days", 14) * 14 * 86400 * 1000;
+        MAX_DEATH_INV_AGE_MILLIS = fc.getLong("max-death-inventory-age-days", 14) * 86400 * 1000;
         DEBUG = fc.getBoolean("debug", false);
 
         List<YamlConfiguration> shortcuts = fc.getSectionList("shortcuts");

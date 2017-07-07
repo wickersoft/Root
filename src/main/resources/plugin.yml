@@ -92,7 +92,7 @@ permissions:
       root.nv: true
       root.player.*: true
       root.seelwc: true
-      root.shadowmute: true
+      root.shadowmute.*: true
       root.sign.*: true
       root.slurp: true
       root.sub: true
@@ -145,6 +145,7 @@ permissions:
       root.sign: true  
       root.sign.boat.*: true
       root.sign.cart.*: true
+      root.sign.dice.*: true
       root.sign.info.*: true
       root.sign.launch.*: true
       root.sign.lift.*: true
@@ -159,6 +160,11 @@ permissions:
     children:
       root.sign.cart: true  
       root.sign.cart.create: true
+  
+  root.sign.dice.*:
+    children:
+      root.sign.dice: true  
+      root.sign.dice.create: true
   
   root.sign.info.*:
     children:
@@ -191,6 +197,12 @@ permissions:
     children:
       root.mute: true
       root.mute.bypass: true
+      
+  root.shadowmute.*:
+    description: Gives access to the shadowmute feature of Root and its bypass.
+    children:
+      root.shadowmute: true
+      root.shadowmute.see: true
 
   root.slurp.*:
     description: Gives access to the slurp feature of Root and its radius function.
