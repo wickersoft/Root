@@ -64,7 +64,7 @@ public class Storage {
         UNDERCOVER_CHAT_FORMAT = ChatColor.translateAlternateColorCodes('&',
                 fc.getString("undercover-chat-format", "<%1$s> %2$s"));
         SHADOWMUTE_SEE_CHAT_FORMAT = ChatColor.translateAlternateColorCodes('&',
-                fc.getString("shadowmute-see-chat-format", "&8<%1&8$s> &8%2$s"));
+                fc.getString("shadowmute-see-chat-format", "&8<&8%1$s> &8%2$s"));
         MYMEMORY_TRANSLATED_NET_API_KEY = fc.getString("mymemory-translated-net-api-key", "");
         GOOGLE_MAPS_API_KEY = fc.getString("google-maps-api-key", "");
         BAN_APPEAL_MESSAGE = fc.getString("ban-appeal-message", "");
