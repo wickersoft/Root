@@ -265,11 +265,12 @@ public class Tesseract {
             stackSize = amount;
         }
         amount -= stackSize;
+        ItemStack is = new ItemStack(material, (int) stackSize, (short) damage);
         if (amount == 0) {
             material = Material.AIR;
             damage = 0;
         }
-        return new ItemStack(material, (int) stackSize, (short) damage);
+        return is;
     }
 
     public final boolean writeToKleinBottle(ItemStack bottle) {

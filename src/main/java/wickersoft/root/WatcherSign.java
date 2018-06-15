@@ -16,6 +16,7 @@ import org.bukkit.Particle;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Dropper;
+import org.bukkit.block.Hopper;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Boat;
 import org.bukkit.entity.EntityType;
@@ -26,6 +27,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockDispenseEvent;
 import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.SignChangeEvent;
@@ -63,18 +65,16 @@ public class WatcherSign implements Listener {
         Integer oldPower = DROPPER_POWER_CACHE.put(dropperBlock, power);
         if (oldPower != null && oldPower == 0 && power > 0) { // Positive redstone edge on a dropper
             Dropper dropper = (Dropper) dropperBlock.getState();
-            boolean tesseractApplied = false;
             for (BlockFace face : Storage.CARDINAL_FACES) {
                 if (Tesseract.isTesseract(dropperBlock.getRelative(face))) {
                     Sign sign = (Sign) dropperBlock.getRelative(face).getState();
                     Tesseract tesseract = Tesseract.fromSign(sign);
-                    if (tesseractApplied |= Tesseract.storeInventory(dropper.getInventory(), tesseract)) {
-                        tesseract.writeToSign(sign, tesseractApplied);
+                    if (Tesseract.storeInventory(dropper.getInventory(), tesseract)) {
+                        tesseract.writeToSign(sign, true);
+                        dropper = (Dropper) dropperBlock.getState();
+                        dropper.update(true, false);
                     }
                 }
-            }
-            if (tesseractApplied) {
-                dropper.update();
             }
         }
     }
