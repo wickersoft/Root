@@ -27,6 +27,9 @@ public class UserData {
     private String dingPatternString = "";
     private boolean frozen = false;
     private boolean shadowmuted = false;
+    private boolean undercover = false;
+    private boolean noPhantom = false;
+    
     private String geoLocation = "Unknown";
     private String preciseGeoLocation = "Unknown";
     private String timeZone = "Unknown";
@@ -34,7 +37,6 @@ public class UserData {
     private String subtitleLangPair = "";
     private String lastKnownIp = "Unknown";
     private String lastKnownName = "Unknown";
-    private boolean undercover = false;
     private final int[] weeklyMetrics = new int[24 * 7];
     private final int[] yearlyMetrics = new int[13];
 
@@ -252,6 +254,7 @@ public class UserData {
         lastKnownIp = yaml.getString("ip", "Unknown");
         shadowmuted = yaml.getBoolean("shadowmuted", false);
         undercover = yaml.getBoolean("undercover", false);
+        noPhantom = yaml.getBoolean("nophantom", false);
         if (playerInstance != null) {
             lastKnownName = playerInstance.getName();
         }
@@ -298,6 +301,7 @@ public class UserData {
         yaml.set("frozen", frozen);
         yaml.set("shadowmuted", shadowmuted);
         yaml.set("undercover", undercover);
+        yaml.set("nophantom", noPhantom);
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < 24 * 7; i++) {
             sb.append(StringUtil.toBase64(weeklyMetrics[i], 2));
@@ -324,5 +328,13 @@ public class UserData {
             e.printStackTrace();
         }
         dirty = false;
+    }
+
+    public boolean hasNoPhantom() {
+        return noPhantom;
+    }
+
+    public void setNoPhantom(boolean noPhantom) {
+        this.noPhantom = noPhantom;
     }
 }

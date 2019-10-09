@@ -66,10 +66,10 @@ public class WatcherChat implements Listener {
                 if (recp.hasPermission("root.ding")
                         && UserDataProvider.getOrCreateUser(recp).matchDingPattern(evt.getMessage())) {
                     for (int i = 0; i < 16; i++) {
-                        recp.playSound(recp.getLocation(), Sound.BLOCK_NOTE_PLING, 1, 2f);
+                        recp.playSound(recp.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1, 2f);
                     }
                     for (int i = 0; i < 4; i++) {
-                        recp.playSound(recp.getLocation(), Sound.BLOCK_NOTE_PLING, 1, 1.5f);
+                        recp.playSound(recp.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1, 1.5f);
                     }
                 }
             }

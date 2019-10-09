@@ -23,8 +23,8 @@ public abstract class FakeEntitySender {
         
        
         try {
-            Class.forName("net.minecraft.server.v1_12_R1.EntityPlayer");
-            INSTANCE = new NMS_1_12_R1();
+            Class.forName("net.minecraft.server.v1_14_R1.EntityPlayer");
+            INSTANCE = new NMS_1_14_R1();
             System.out.println("Compatible NMS version detected");
             return INSTANCE;
         } catch (Exception e) {

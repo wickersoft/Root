@@ -116,7 +116,7 @@ public class Wand {
                 return;
             }
             Block block = evt.getBlock();
-            if (block.getType() == Material.SIGN_POST || block.getType() == Material.WALL_SIGN) {
+            if (block.getType() == Material.OAK_SIGN || block.getType() == Material.OAK_WALL_SIGN) {
                 Sign sign = (Sign) block.getState();
                 ItemStack dropSign = SpecialItemUtil.generateInstantSign(1, sign.getLines());
                 evt.setCancelled(true);

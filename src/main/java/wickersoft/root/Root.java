@@ -41,6 +41,7 @@ public class Root extends JavaPlugin {
         ForeignCommandHook.load();
         Wand.load();
         getServer().getPluginManager().registerEvents(WatcherChat.instance(), this);
+        getServer().getPluginManager().registerEvents(WatcherEnvironment.instance(), this);
         getServer().getPluginManager().registerEvents(WatcherPlayer.instance(), this);
         getServer().getPluginManager().registerEvents(WatcherSign.instance(), this);
         getServer().getPluginManager().registerEvents(WatcherWand.instance(), this);

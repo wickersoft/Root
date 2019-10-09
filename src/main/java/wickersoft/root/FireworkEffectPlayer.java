@@ -1,17 +1,17 @@
 package wickersoft.root;
 
 import java.util.List;
-import net.minecraft.server.v1_12_R1.EntityFireworks;
-import net.minecraft.server.v1_12_R1.PacketPlayOutEntityStatus;
+import net.minecraft.server.v1_14_R1.EntityFireworks;
+import net.minecraft.server.v1_14_R1.PacketPlayOutEntityStatus;
 import org.bukkit.Bukkit;
-import org.bukkit.craftbukkit.v1_12_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_14_R1.inventory.CraftItemStack;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_12_R1.CraftWorld;
-import org.bukkit.craftbukkit.v1_12_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_14_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_14_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
 public class FireworkEffectPlayer {
@@ -20,7 +20,7 @@ public class FireworkEffectPlayer {
 
     static {
         try {
-            Class.forName("net.minecraft.server.v1_12_R1.EntityFireworks");
+            Class.forName("net.minecraft.server.v1_14_R1.EntityFireworks");
             nmsDetected = true;
             System.out.println("Compatible NMS version detected");
         } catch (Exception e) {
@@ -87,23 +87,23 @@ public class FireworkEffectPlayer {
         if (!nmsDetected) {
             return;
         }
-        ItemStack is = new ItemStack(Material.FIREWORK, 1);
+        ItemStack is = new ItemStack(Material.FIREWORK_ROCKET, 1);
         FireworkMeta meta = (FireworkMeta) is.getItemMeta();
         meta.addEffects(effects);
         is.setItemMeta(meta);
-        net.minecraft.server.v1_12_R1.ItemStack nmsIs = CraftItemStack.asNMSCopy(is);
-        CustomEntityFirework_1_12_R1 firework = new CustomEntityFirework_1_12_R1(location, nmsIs);
+        net.minecraft.server.v1_14_R1.ItemStack nmsIs = CraftItemStack.asNMSCopy(is);
+        CustomEntityFirework_1_14_R1 firework = new CustomEntityFirework_1_14_R1(location, nmsIs);
         firework.perform();
     }
 
     //CustomEntityFirework class by recon88: https://github.com/recon88/Instant-Fireworks/blob/master/src/CustomEntityFirework.java
-    private static class CustomEntityFirework_1_12_R1 extends EntityFireworks {
+    private static class CustomEntityFirework_1_14_R1 extends EntityFireworks {
 
         private final Player[] players = new Player[]{};
         private final Location location;
         private boolean gone = false;
 
-        protected CustomEntityFirework_1_12_R1(Location loc, net.minecraft.server.v1_12_R1.ItemStack metaContainer) {
+        protected CustomEntityFirework_1_14_R1(Location loc, net.minecraft.server.v1_14_R1.ItemStack metaContainer) {
             super(((CraftWorld) loc.getWorld()).getHandle(), loc.getX(), loc.getY(), loc.getZ(), metaContainer);
             Bukkit.getOnlinePlayers().toArray(players);
             this.a(0.25F, 0.25F);
@@ -123,7 +123,7 @@ public class FireworkEffectPlayer {
         }
 
         @Override
-        public void B_() {
+        public void tick() {
             if (gone) {
                 return;
             }

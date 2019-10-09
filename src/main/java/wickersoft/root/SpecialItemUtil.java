@@ -22,7 +22,7 @@ public class SpecialItemUtil {
     private static final String VOLATILE_LORE = ChatColor.GRAY + "Volatile";
 
     public static ItemStack generateInstantSign(int amount, String... lines) {
-        ItemStack signStack = new ItemStack(Material.SIGN, amount, (short) 0);
+        ItemStack signStack = new ItemStack(Material.OAK_SIGN, amount);
         ArrayList<String> lore = new ArrayList<>();
         lore.add(ChatColor.GRAY + "Instant Sign");
         int maxLine = Math.min(4, lines.length);
@@ -37,7 +37,7 @@ public class SpecialItemUtil {
     }
     
     public static ItemStack generateKleinBottle(int amount) {
-        ItemStack signStack = new ItemStack(Material.DRAGONS_BREATH, amount, (short) 0);
+        ItemStack signStack = new ItemStack(Material.DRAGON_BREATH, amount, (short) 0);
         ArrayList<String> lore = new ArrayList<>();
         lore.add(ChatColor.GRAY + "Klein Bottle");
         lore.add(ChatColor.GRAY + "-");

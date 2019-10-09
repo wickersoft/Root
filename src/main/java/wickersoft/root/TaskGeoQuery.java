@@ -26,14 +26,24 @@ public class TaskGeoQuery extends BukkitRunnable {
         Map<Object, Object> resultData = new HashMap<>();
 
         try {
-            HTTPResponse queryResponse = HTTP.http("http://www.geoplugin.net/php.gp?ip=" + URLEncoder.encode(ip, "UTF-8"), 3000);
+            String queryUrl = "http://www.geoplugin.net/csv.gp?ip=" + "85.131.153.100";
+            HTTPResponse queryResponse = HTTP.http(queryUrl, 3000);
             String geoResponse = new String(queryResponse.content);
-            SerializedPhpParser serializedPhpParser = new SerializedPhpParser(geoResponse);
-
-            resultData.putAll((Map<Object, Object>) serializedPhpParser.parse());
-
-            String latitude = (String) resultData.get("geoplugin_latitude");
-            String longitude = (String) resultData.get("geoplugin_longitude");
+            
+            String[] lines = geoResponse.split("\n");
+            for(String line : lines) {
+                int commaLoc = line.indexOf(",");
+                if(commaLoc != -1) {
+                    if(commaLoc == line.length() - 1) {
+                        resultData.put(line.substring(0, commaLoc), "Unknown");
+                    } else {
+                        resultData.put(line.substring(0, commaLoc), line.substring(commaLoc + 1));
+                    }
+                }
+            }
+            
+            String latitude = (String) resultData.getOrDefault("geoplugin_latitude", "0");
+            String longitude = (String) resultData.getOrDefault("geoplugin_longitude", "0");
 
             HTTPResponse mapsResponse = HTTP.http("https://maps.googleapis.com/maps/api/timezone/json?"
                     + "location=" + latitude + "," + longitude
