@@ -38,6 +38,9 @@ commands:
     description: Makes a player's messages only visible to that player
     aliases: [smute]
     permission: root.shadowmute
+  sleep:
+    description: Resets a player's sleep timer
+    permission: root.sleep
   sub:
     description: Display subtitles after a player's messages
     permission: root.sub
@@ -74,6 +77,7 @@ permissions:
       root.seelwc: true
       root.shadowmute.*: true
       root.sign.*: true
+      root.sleep.*: true
       root.sub: true
       root.undercover: true
       root.uuid: true
@@ -146,6 +150,12 @@ permissions:
     children:
       root.sign.launch: true
       root.sign.launch.create: true
+  
+  root.sleep.*:
+    children:
+      root.sleep: true
+      root.sleep.all: true
+      root.sleep.other: true
   
   root.mute.*:
     description: Gives access to the mute feature of Root and its bypass.

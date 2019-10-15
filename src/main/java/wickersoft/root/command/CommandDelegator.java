@@ -45,6 +45,7 @@ public class CommandDelegator {
         DELEGATIONS.put("portal", new Portal());
         DELEGATIONS.put("shadowmute", new Shadowmute());
         DELEGATIONS.put("seelwc", new Seelwc());
+        DELEGATIONS.put("sleep", new Sleep());
         DELEGATIONS.put("sub", new Sub());
         DELEGATIONS.put("undercover", new Undercover());
         DELEGATIONS.put("uuid", new Uuid());
