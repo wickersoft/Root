@@ -41,7 +41,7 @@ public class Util {
         } else {
             String volatileRegion = SpecialItemUtil.getVolatileRegion(is);
             if (volatileRegion == null) {
-                return true;
+                return false;
             } else {
                 BlockVector3 bv3 = BukkitAdapter.asBlockVector(player.getLocation());
                 World wld = BukkitAdapter.adapt(player.getWorld());

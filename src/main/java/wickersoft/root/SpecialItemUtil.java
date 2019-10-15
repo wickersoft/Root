@@ -54,7 +54,7 @@ public class SpecialItemUtil {
         if (setOrUnset && !hasLoreFlag(clone, loreLine)) {
             ItemMeta meta = clone.getItemMeta();
             if (meta == null) {
-                System.err.println("Unable to set a Lore lag: ItemMeta is null!");
+                System.err.println("Unable to set a Lore flag: ItemMeta is null!");
                 System.err.println("Item: ");
                 System.err.println(original);
                 return original;
