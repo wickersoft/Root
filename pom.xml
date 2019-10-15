@@ -38,18 +38,18 @@
         <dependency>
             <groupId>com.sk89q</groupId>
             <artifactId>worldguard</artifactId>
-            <version>6.1.2</version>
+            <version>7.0.0</version>
             <systemPath>
-                ${project.basedir}/lib/worldguard-6.1.2.jar
+                ${project.basedir}/lib/worldguard-bukkit-7.0.0.jar
             </systemPath>
             <scope>system</scope>
         </dependency>
         <dependency>
             <groupId>com.sk89q</groupId>
             <artifactId>worldedit</artifactId>
-            <version>6.1</version>
+            <version>7.0.1</version>
             <systemPath>
-                ${project.basedir}/lib/worldedit-bukkit-6.1.jar
+                ${project.basedir}/lib/worldedit-bukkit-7.0.1.jar
             </systemPath>
             <scope>system</scope>
         </dependency>

@@ -31,7 +31,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerPickupItemEvent;
+import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.EquipmentSlot;
@@ -138,7 +138,7 @@ public class WatcherPlayer implements Listener {
 
     @EventHandler
     public void onJoin(PlayerJoinEvent evt) {
-        
+
         String ip = evt.getPlayer().getAddress().getAddress().getHostAddress();
         UserData data = UserDataProvider.getOrCreateUser(evt.getPlayer());
         data.setName(evt.getPlayer().getName());
@@ -180,12 +180,14 @@ public class WatcherPlayer implements Listener {
     }
 
     @EventHandler
-    public void onItemPickup(PlayerPickupItemEvent evt) {
-        if (UserDataProvider.getOrCreateUser(evt.getPlayer()).isFrozen() && !evt.getPlayer().hasPermission("root.freeze.bypass")) {
+    public void onItemPickup(EntityPickupItemEvent evt) {
+        if (!(evt.getEntity() instanceof Player)) {
+            return;
+        }
+        Player player = (Player) evt.getEntity();
+        if (UserDataProvider.getOrCreateUser(player).isFrozen() && !player.hasPermission("root.freeze.bypass")) {
             evt.setCancelled(true);
-        } else if ((!evt.getPlayer().hasPermission("root.item.volatile")
-                && SpecialItemUtil.isVolatile(evt.getItem().getItemStack()))
-                || SpecialItemUtil.isCursedSword(evt.getItem().getItemStack())) {
+        } else if (!Util.canPlayerHoldVolatileItem(player, evt.getItem().getItemStack()) || SpecialItemUtil.isCursedSword(evt.getItem().getItemStack())) {
             evt.setCancelled(true);
             evt.getItem().remove();
         }

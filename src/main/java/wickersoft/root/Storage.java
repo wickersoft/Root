@@ -7,7 +7,8 @@ package wickersoft.root;
 
 import com.earth2me.essentials.Essentials;
 import com.griefcraft.lwc.LWCPlugin;
-import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+import com.sk89q.worldguard.WorldGuard;
+import com.sk89q.worldguard.protection.regions.RegionContainer;
 import java.io.File;
 import java.io.IOException;
 import java.security.MessageDigest;
@@ -15,7 +16,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 import java.util.regex.Pattern;
 import org.bukkit.Bukkit;
@@ -55,9 +55,9 @@ public class Storage {
     public static boolean DEBUG;
     public static MessageDigest md5;
 
-    public static Essentials essentials = (Essentials) Bukkit.getPluginManager().getPlugin("Essentials");
-    public static WorldGuardPlugin worldguard = (WorldGuardPlugin) Bukkit.getPluginManager().getPlugin("WorldGuard");
-    public static LWCPlugin lwc = (LWCPlugin) Bukkit.getPluginManager().getPlugin("LWC");
+    public static final Essentials essentials = (Essentials) Bukkit.getPluginManager().getPlugin("Essentials");
+    private static RegionContainer worldguard;
+    public static final LWCPlugin lwc = (LWCPlugin) Bukkit.getPluginManager().getPlugin("LWC");
 
     public static void loadData() {
         YamlConfiguration fc = YamlConfiguration.read(new File(Root.instance().getDataFolder(), "config.yml"));
@@ -127,6 +127,14 @@ public class Storage {
         }
     }
 
+    public static RegionContainer getWorldguard() {
+        if(worldguard == null) {
+            return (worldguard = WorldGuard.getInstance().getPlatform().getRegionContainer());
+        } else {
+            return worldguard;
+        }
+    }
+    
     static {
         try {
             md5 = MessageDigest.getInstance("MD5");

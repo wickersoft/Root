@@ -1,6 +1,17 @@
 package wickersoft.root;
 
+import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.world.World;
+import com.sk89q.worldguard.WorldGuard;
+import com.sk89q.worldedit.bukkit.BukkitPlayer;
+import com.sk89q.worldguard.protection.ApplicableRegionSet;
+import com.sk89q.worldguard.protection.flags.Flags;
+import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+import com.sk89q.worldguard.protection.regions.RegionQuery;
 import fakeentitysender.FakeEntitySender;
+import java.util.Iterator;
 import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -8,6 +19,7 @@ import org.bukkit.Particle;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 public class Util {
 
@@ -19,6 +31,32 @@ public class Util {
         nmsDetected = fakeEntitySender.isCompatible();
     }
 
+    public static boolean canPlayerHoldVolatileItem(Player player, ItemStack is) {
+        if (player.hasPermission("root.item.volatile")) {
+            return true;
+        } else if (!SpecialItemUtil.isVolatile(is)) {
+            return true;
+        } else if (Storage.getWorldguard() == null) {
+            return false;
+        } else {
+            String volatileRegion = SpecialItemUtil.getVolatileRegion(is);
+            if (volatileRegion == null) {
+                return true;
+            } else {
+                BlockVector3 bv3 = BukkitAdapter.asBlockVector(player.getLocation());
+                World wld = BukkitAdapter.adapt(player.getWorld());
+                ApplicableRegionSet ars = Storage.getWorldguard().get(wld).getApplicableRegions(bv3);
+                Iterator<ProtectedRegion> it = ars.iterator();
+                while (it.hasNext()) {
+                    ProtectedRegion pr = it.next();
+                    if (pr.getId().equals(volatileRegion)) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+        }
+    }
 
     // Returns the exact center of a block of a given location
     public static Location getCenter(Location loc) {
@@ -94,16 +132,6 @@ public class Util {
     // Displays a particle with the given data
     public static void display(Location loc, Particle particle, int amount, float speed, float xO, float yO, float zO) {
         loc.getWorld().spawnParticle(particle, loc.getX(), loc.getY(), loc.getZ(), amount, xO, yO, zO, speed);
-    }
-
-    public static boolean canBuild(Player player, Block block) {
-        return Storage.worldguard == null || Storage.worldguard.canBuild(player, block);
-    }
-
-    public static boolean isProtected(Block block) {
-        return Storage.worldguard != null
-                && Storage.worldguard.getRegionManager(block.getWorld())
-                        .getApplicableRegions(block.getLocation()).size() != 0;
     }
 
     public static boolean showBlock(int x, int y, int z, int entityId, Player player) {

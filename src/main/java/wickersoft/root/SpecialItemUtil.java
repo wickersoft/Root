@@ -31,11 +31,11 @@ public class SpecialItemUtil {
         }
         ItemMeta meta = signStack.getItemMeta();
         meta.setLore(lore);
-        signStack.setItemMeta(meta);        
-        
+        signStack.setItemMeta(meta);
+
         return signStack;
     }
-    
+
     public static ItemStack generateKleinBottle(int amount) {
         ItemStack signStack = new ItemStack(Material.DRAGON_BREATH, amount, (short) 0);
         ArrayList<String> lore = new ArrayList<>();
@@ -107,6 +107,28 @@ public class SpecialItemUtil {
 
     public static boolean isVolatile(ItemStack is) {
         return hasLoreFlag(is, VOLATILE_LORE);
+    }
+
+    public static String getVolatileRegion(ItemStack is) {
+        if (is == null) {
+            return null;
+        }
+        if (!is.hasItemMeta()) {
+            return null;
+        }
+        if (!is.getItemMeta().hasLore()) {
+            return null;
+        }
+        List<String> lore = is.getItemMeta().getLore();
+        int numLoreLines = lore.size();
+        for (int i = 0; i < numLoreLines; i++) {
+            if (lore.get(i).equals(VOLATILE_LORE)) {
+                if(i <numLoreLines - 1) {
+                    return lore.get(i+1);
+                }
+            }
+        }
+        return null;
     }
 
     public static boolean isCursedSword(ItemStack is) {
