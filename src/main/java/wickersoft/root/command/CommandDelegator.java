@@ -35,7 +35,6 @@ public class CommandDelegator {
 
     static {
         DELEGATIONS.put("activity", new Activity());
-        DELEGATIONS.put("crash", new Crash());
         DELEGATIONS.put("ding", new Ding());
         DELEGATIONS.put("freeze", new Freeze());
         DELEGATIONS.put("instantsign", new InstantSign());

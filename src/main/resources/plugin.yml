@@ -8,9 +8,6 @@ commands:
   activity:
     description: Find out when to expect a player online
     permission: root.activity
-  crash:
-    description: Causes (only) a player's game to grind to a halt
-    permissions: root.crash
   ding:
     description: Plays a "Ding" sound when a chat message matches the specified pattern
     permission: root.ding
@@ -64,7 +61,6 @@ permissions:
     children:
       root: true
       root.activity: true
-      root.crash: true
       root.chat.*: true
       root.ding: true
       root.freeze: true
@@ -156,13 +152,7 @@ permissions:
       root.sleep: true
       root.sleep.all: true
       root.sleep.other: true
-  
-  root.mute.*:
-    description: Gives access to the mute feature of Root and its bypass.
-    children:
-      root.mute: true
-      root.mute.bypass: true
-      
+
   root.shadowmute.*:
     description: Gives access to the shadowmute feature of Root and its bypass.
     children:
