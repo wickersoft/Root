@@ -24,7 +24,7 @@ public class Nophantom extends PlayerCommand {
             return true;
         }
         data.setNoPhantom(!data.hasNoPhantom());
-        player.sendMessage(ChatColor.GRAY + "Anti-Phantom " + ChatColor.BLUE + (data.hasNoPhantom() ? "enabled" : "disabled"));
+        player.sendMessage(ChatColor.GRAY + "Anti-Phantom " + (data.hasNoPhantom() ? (ChatColor.GREEN + "enabled") : (ChatColor.RED + "disabled")));
         return true;
     }
 

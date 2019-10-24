@@ -9,6 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import syn.root.user.UserData;
 import syn.root.user.UserDataProvider;
@@ -82,6 +83,52 @@ public abstract class ForeignCommandHook {
                 return;
             }
             Storage.WARN_IPS.put(ip, data.getName());
+        }
+    }
+
+    public static class RgDefineHook extends ForeignCommandHook {
+
+        private final Pattern p = Pattern.compile("^\\/(rg|region) (define|overlap)");
+
+        @Override
+        public Pattern getPattern() {
+            return p;
+        }
+
+        @Override
+        public String getPermission() {
+            return "worldguard.region.define";
+        }
+
+        @Override
+        protected void consume(PlayerCommandPreprocessEvent evt) {
+            Matcher m = p.matcher(evt.getMessage());
+            if (!m.find()) {
+                return;
+            }
+            
+            List<String> regionNames = Util.getRegionsCollidingWithPlayerSelection(evt.getPlayer());
+
+            if (!regionNames.isEmpty()) {
+                StringBuilder sb = new StringBuilder();
+                sb.append(ChatColor.BLUE);
+                sb.append("Root: ");
+                sb.append(ChatColor.GRAY);
+                sb.append("This region overlaps with neighboring regions: ");
+                sb.append(ChatColor.RED);
+                sb.append(regionNames.remove(0));
+                while (!regionNames.isEmpty()) {
+                    sb.append(ChatColor.GRAY).append(", ").append(ChatColor.RED).append(regionNames.remove(0));
+                }
+                evt.getPlayer().sendMessage(sb.toString());
+            }
+            
+            if(m.group(2).equals("overlap")) {
+                evt.setCancelled(true);
+                if(regionNames.isEmpty()) {
+                    evt.getPlayer().sendMessage(ChatColor.BLUE + "Root: " + ChatColor.GRAY + "Your selection does not overlap woth any WorldGuard regions");
+                }
+            }
         }
     }
 }

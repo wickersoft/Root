@@ -1,18 +1,21 @@
 package wickersoft.root;
 
-import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.LocalSession;
+import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldedit.bukkit.BukkitPlayer;
+import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
-import com.sk89q.worldguard.protection.flags.Flags;
+import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
-import com.sk89q.worldguard.protection.regions.RegionQuery;
 import fakeentitysender.FakeEntitySender;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -98,6 +101,33 @@ public class Util {
         return getCenter(blk.getLocation(), centerVertical);
     }
 
+    public static List<String> getRegionsCollidingWithPlayerSelection(Player p) {
+        List<String> regionNames = new ArrayList<>();
+        BukkitPlayer player = BukkitAdapter.adapt(p);
+        com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(p.getWorld());
+
+        LocalSession weSession = WorldEdit.getInstance().getSessionManager().get(player);
+        if (weSession == null) {
+            return regionNames;
+        }
+
+        try {
+            Region sel = weSession.getSelection(world);
+            AABB selectionAABB = new AABB(sel);
+
+            RegionManager rm = WorldGuard.getInstance().getPlatform().getRegionContainer().get(world);
+            Map<String, ProtectedRegion> allRegions = rm.getRegions();
+           
+            allRegions.forEach((name, prot) -> {
+                if (new AABB(prot).collides(selectionAABB)) {
+                    regionNames.add(name);
+                }
+            });
+        } catch (Exception ex) {
+        }
+        return regionNames;
+    }
+
     public static Location getLiftDestination(Location originalPlayerLoc, Location startLiftLoc, Location destinationLiftLoc) {
         Block block = originalPlayerLoc.getWorld().getBlockAt(originalPlayerLoc.getBlockX(), destinationLiftLoc.getBlockY(), originalPlayerLoc.getBlockZ());
         for (int i = 0; i++ < 5 && block.getY() > 0; block = block.getRelative(BlockFace.DOWN)) {
@@ -176,5 +206,33 @@ public class Util {
             return false;
         }
         return fakeEntitySender.hideHighlightBlock(block, player);
+    }
+    
+    private static class AABB {
+
+        private final double xMin, xMax, yMin, yMax, zMin, zMax;
+
+        public AABB(BlockVector3 min, BlockVector3 max) {
+            this.xMin = min.getBlockX();
+            this.yMin = min.getBlockY();
+            this.zMin = min.getBlockZ();
+            this.xMax = max.getBlockX();
+            this.yMax = max.getBlockY();
+            this.zMax = max.getBlockZ();
+        }
+
+        public AABB(Region region) {
+            this(region.getMinimumPoint(), region.getMaximumPoint());
+        }
+        
+        public AABB(ProtectedRegion region) {
+            this(region.getMinimumPoint(), region.getMaximumPoint());
+        }
+
+        public boolean collides(AABB other) {
+            return !(this.xMax < other.xMin || this.xMin > other.xMax
+                    || this.yMax < other.yMin || this.yMin > other.yMax
+                    || this.zMax < other.zMin || this.zMin > other.zMax);
+        }
     }
 }
