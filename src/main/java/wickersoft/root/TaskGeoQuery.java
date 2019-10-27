@@ -26,7 +26,7 @@ public class TaskGeoQuery extends BukkitRunnable {
         Map<Object, Object> resultData = new HashMap<>();
 
         try {
-            String queryUrl = "http://www.geoplugin.net/csv.gp?ip=" + "85.131.153.100";
+            String queryUrl = "http://www.geoplugin.net/csv.gp?ip=" + data.getIp();
             HTTPResponse queryResponse = HTTP.http(queryUrl, 3000);
             String geoResponse = new String(queryResponse.content);
             
