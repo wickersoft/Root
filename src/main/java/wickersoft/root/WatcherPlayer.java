@@ -5,6 +5,7 @@
  */
 package wickersoft.root;
 
+import syn.root.user.Mark;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -12,20 +13,25 @@ import java.util.Date;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
+import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerPickupItemEvent;
+import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.EquipmentSlot;
@@ -52,15 +58,18 @@ public class WatcherPlayer implements Listener {
     @EventHandler
     public void onBlockBreak(BlockBreakEvent evt) {
         UserData data = UserDataProvider.getOrCreateUser(evt.getPlayer());
-        if (data.isFrozen()) {
+        if (data.isFrozen() && !evt.getPlayer().hasPermission("root.freeze.bypass")) {
             evt.setCancelled(true);
+            return;
         }
 
-        if (evt.getBlock().getY() <= 16 && evt.getBlock().getType() == Material.DIAMOND_ORE) {
+        if (!evt.isCancelled() && evt.getBlock().getY() <= 16 && evt.getBlock().getType() == Material.DIAMOND_ORE
+                && !evt.getPlayer().hasPermission("root.notify.xray.bypass")) {
             long xrayTest = data.testXrayWarnTime();
             if (xrayTest < Storage.XRAY_WARN_TIME) {
                 long minutes = xrayTest / 60000;
                 long seconds = (xrayTest / 1000) % 60;
+
                 Bukkit.broadcast(ChatColor.RED + "Player " + evt.getPlayer().getName() + " has mined 20 Diamond Ore in "
                         + minutes + " minutes and " + seconds + " seconds!", "root.notify.xray");
                 data.resetXrayWarnTime();
@@ -71,7 +80,7 @@ public class WatcherPlayer implements Listener {
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent evt) {
         UserData data = UserDataProvider.getOrCreateUser(evt.getPlayer());
-        if (data.isFrozen()) {
+        if (data.isFrozen() && !evt.getPlayer().hasPermission("root.freeze.bypass")) {
             evt.setCancelled(true);
         }
     }
@@ -82,7 +91,7 @@ public class WatcherPlayer implements Listener {
             return;
         }
         Player player = (Player) evt.getDamager();
-        if (UserDataProvider.getOrCreateUser(player).isFrozen()) {
+        if (UserDataProvider.getOrCreateUser(player).isFrozen() && !player.hasPermission("root.freeze.bypass")) {
             evt.setCancelled(true);
         }
     }
@@ -92,34 +101,44 @@ public class WatcherPlayer implements Listener {
         long currentMillis = System.currentTimeMillis();
         File[] allInventoryFiles = InventoryProvider.getInventoryFiles(evt.getEntity().getUniqueId());
         for (File file : allInventoryFiles) {
-            if (file.getName().startsWith("_death-")
+            if (file.getName().startsWith("_death_")
                     && currentMillis - file.lastModified() > Storage.MAX_DEATH_INV_AGE_MILLIS) {
                 file.delete(); // Clean up old death inventories
             }
         }
 
-        
-        String deathInventoryName = "_death-" + DEATH_INVENTORY_DATE_FORMAT.format(Date.from(Instant.ofEpochMilli(currentMillis)));
+        String deathInventoryName = "_death_" + DEATH_INVENTORY_DATE_FORMAT.format(Date.from(Instant.ofEpochMilli(currentMillis)));
         File deathInventoryFile = InventoryProvider.getInventoryFile(evt.getEntity(), deathInventoryName);
         InventoryProvider.saveInventory(evt.getEntity(), deathInventoryFile);
     }
 
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent evt) {
-        if (UserDataProvider.getOrCreateUser(evt.getPlayer()).isFrozen()) {
+        if (UserDataProvider.getOrCreateUser(evt.getPlayer()).isFrozen() && !evt.getPlayer().hasPermission("root.freeze.bypass")) {
             evt.setCancelled(true);
         }
     }
 
     @EventHandler
     public void onPlayerInteract(PlayerInteractEntityEvent evt) {
-        if (UserDataProvider.getOrCreateUser(evt.getPlayer()).isFrozen()) {
+        if (UserDataProvider.getOrCreateUser(evt.getPlayer()).isFrozen() && !evt.getPlayer().hasPermission("root.freeze.bypass")) {
             evt.setCancelled(true);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onPreLogin(PlayerLoginEvent evt) {
+        if (evt.getResult() != PlayerLoginEvent.Result.ALLOWED) {
+            String kickMessage = evt.getKickMessage();
+            kickMessage += "\n\n";
+            kickMessage += Storage.BAN_APPEAL_MESSAGE;
+            evt.setKickMessage(kickMessage);
         }
     }
 
     @EventHandler
     public void onJoin(PlayerJoinEvent evt) {
+
         String ip = evt.getPlayer().getAddress().getAddress().getHostAddress();
         UserData data = UserDataProvider.getOrCreateUser(evt.getPlayer());
         data.setName(evt.getPlayer().getName());
@@ -133,23 +152,42 @@ public class WatcherPlayer implements Listener {
                 Bukkit.broadcast(ChatColor.RED + "Player " + evt.getPlayer().getName() + " has Marks! " + ChatColor.GRAY + ChatColor.ITALIC + "[/mark " + data.getName() + "]", "root.notify.mark");
             }
         }
-        new TaskGeoQuery(data, !evt.getPlayer().hasPlayedBefore()).runTaskAsynchronously(Root.instance());
+
+        new TaskGeoQuery(data, false, (geoData) -> {
+            String geoLocation = (String) geoData.getOrDefault("geoplugin_countryName", "GeoQuery Error");
+            String preciseGeoLocation = (String) geoData.getOrDefault("geoplugin_city", "Unknown") + ", "
+                    + (String) geoData.getOrDefault("geoplugin_regionName", "Unknown") + ", "
+                    + geoLocation;
+            geoLocation = org.apache.commons.lang3.StringEscapeUtils.unescapeHtml4(geoLocation);
+            preciseGeoLocation = org.apache.commons.lang3.StringEscapeUtils.unescapeHtml4(preciseGeoLocation);
+            String timezone = (String) geoData.getOrDefault("maps_timezone", "GeoQuery Error");
+            data.setGeoLocation(geoLocation);
+            data.setPreciseGeoLocation(preciseGeoLocation);
+            data.setTimezone(timezone);
+            if (!evt.getPlayer().hasPlayedBefore()) {
+                Bukkit.broadcast(ChatColor.BLUE + data.getName() + ChatColor.GRAY + ": "
+                        + ChatColor.BLUE + ip + ChatColor.GRAY + " / "
+                        + ChatColor.BLUE + geoLocation, "root.notify.firstjoin");
+            }
+        }).runTaskAsynchronously(Root.instance());
     }
 
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent evt) {
-        if (UserDataProvider.getOrCreateUser(evt.getPlayer()).isFrozen()) {
+        if (UserDataProvider.getOrCreateUser(evt.getPlayer()).isFrozen() && !evt.getPlayer().hasPermission("root.freeze.bypass")) {
             evt.setCancelled(true);
         }
     }
 
     @EventHandler
-    public void onItemPickup(PlayerPickupItemEvent evt) {
-        if (UserDataProvider.getOrCreateUser(evt.getPlayer()).isFrozen()) {
+    public void onItemPickup(EntityPickupItemEvent evt) {
+        if (!(evt.getEntity() instanceof Player)) {
+            return;
+        }
+        Player player = (Player) evt.getEntity();
+        if (UserDataProvider.getOrCreateUser(player).isFrozen() && !player.hasPermission("root.freeze.bypass")) {
             evt.setCancelled(true);
-        } else if ((!evt.getPlayer().hasPermission("root.item.volatile")
-                && SpecialItemUtil.isVolatile(evt.getItem().getItemStack()))
-                || SpecialItemUtil.isCursedSword(evt.getItem().getItemStack())) {
+        } else if (!Util.canPlayerHoldVolatileItem(player, evt.getItem().getItemStack()) || SpecialItemUtil.isCursedSword(evt.getItem().getItemStack())) {
             evt.setCancelled(true);
             evt.getItem().remove();
         }
@@ -158,8 +196,17 @@ public class WatcherPlayer implements Listener {
     @EventHandler
     public void onKick(PlayerKickEvent evt) {
         if (evt.getReason().equals("Flying is not enabled on this server")) {
-            Bukkit.broadcast(ChatColor.RED + "Player " + evt.getPlayer().getName() + " was kicked for flying!", "root.notify.flykick");
+            Block block = evt.getPlayer().getLocation().getBlock();
+            int altitude = 0;
+            while (block.getY() > 0 && block.getType() == Material.AIR) {
+                block = block.getRelative(BlockFace.DOWN);
+                altitude++;
+            }
+            block = evt.getPlayer().getLocation().getBlock();
+            Bukkit.broadcast(ChatColor.RED + evt.getPlayer().getName() + " was kicked for flying! Altitiude: "
+                    + altitude + "  (" + block.getX() + " " + block.getY() + " " + block.getZ() + ")", "root.notify.flykick");
         }
+
         if (evt.getReason().equals("disconnect.spam") && evt.getPlayer().hasPermission("root.chat.nodisconnectspam")) {
             evt.setCancelled(true);
         }
@@ -180,7 +227,7 @@ public class WatcherPlayer implements Listener {
             TaskLaunchPlayer launcher = (TaskLaunchPlayer) evt.getPlayer().getMetadata("root.task.launch").get(0).value();
             launcher.cancel();
         }
-        if (UserDataProvider.getOrCreateUser(evt.getPlayer()).isFrozen()) {
+        if (UserDataProvider.getOrCreateUser(evt.getPlayer()).isFrozen() && !evt.getPlayer().hasPermission("root.freeze.bypass")) {
             evt.setCancelled(true);
         }
     }

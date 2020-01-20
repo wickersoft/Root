@@ -1,7 +1,9 @@
 name: Root
 main: wickersoft.root.Root
 version: 3.1.4
+api-version: 1.14
 author: Wickersoft+Syndek
+depend: ['WorldGuard']
 
 commands:
   activity:
@@ -17,26 +19,12 @@ commands:
     description: Generates signs that can be played without editing
     aliases: [sign]
     permission: root.instantsign
-  inventory:
-    description: Save, load, and delete inventories.
-    aliases: [inv]
-    permission: root.inventory
-  kleinbottle:
-    description: Generates an item that can instantly transfer all of a Tesseract's contents
-    permission: root.kleinbottle 
-  lore:
-    description: Edit an item's lore
-    permission: root.lore
   mark:
     description: Keep notes on a player
     permission: root.mark
-  name:
-    description: Edit an item's name
-    permission: root.name
-  nv:
-    description: Toggle permanent night vision
-    aliases: [see]
-    permission: root.nv
+  nophantom:
+    description: Prevents Phantoms from spawning within range of the user
+    permission: root.nophantom
   player:
     description: View information about a player
     aliases: [p]
@@ -48,9 +36,9 @@ commands:
     description: Makes a player's messages only visible to that player
     aliases: [smute]
     permission: root.shadowmute
-  slurp:
-    description: Pick up items and XP orbs around you.
-    permission: root.slurp
+  sleep:
+    description: Resets a player's sleep timer
+    permission: root.sleep
   sub:
     description: Display subtitles after a player's messages
     permission: root.sub
@@ -58,6 +46,9 @@ commands:
     description: Go undercover and hide your chat formatting.
     permission: root.undercover
     aliases: [u]
+  uuid:
+    description: Shows UUID, current and past names of a player.
+    permission: root.uuid
   volatile:
     description: Makes an item impossible to pick up for Players without a certain permission
     permission: root.volatile
@@ -76,21 +67,17 @@ permissions:
       root.freeze: true
       root.item.*: true
       root.instantsign: true
-      root.inventory.*: true
-      root.kleinbottle: true
-      root.lore: true
       root.mark: true
-      root.name: true
+      root.nophantom: true
       root.notify.*: true
-      root.nv: true
       root.player.*: true
       root.seelwc: true
-      root.shadowmute: true
+      root.shadowmute.*: true
       root.sign.*: true
-      root.slurp: true
+      root.sleep.*: true
       root.sub: true
-      root.tricorder.*: true
       root.undercover: true
+      root.uuid: true
       root.volatile: true
       root.wand.*: true
       
@@ -105,16 +92,10 @@ permissions:
     children:
       root.freeze: true
       root.freeze.bypass: true
-      
-  root.inventory.*:
-    children:
-      root.inventory: true
-      root.inventory.other: true
-  
+        
   root.item.*:
     children:
       root.item.instantsign: true
-      root.item.kleinbottle: true
       root.item.volatile: true
   
   root.notify.*:
@@ -124,21 +105,22 @@ permissions:
       root.notify.iprec: true
       root.notify.mark: true
       root.notify.xray: true
+      root.notify.xray.bypass: true
   
   root.player.*:
     children:
       root.player: true
       root.player.homes: true
+      root.player.preciselocation: true
   
   root.sign.*:
     children:
       root.sign: true  
       root.sign.boat.*: true
       root.sign.cart.*: true
+      root.sign.dice.*: true
       root.sign.info.*: true
       root.sign.launch.*: true
-      root.sign.lift.*: true
-      root.sign.tesseract.*: true
       
   root.sign.boat.*:
     children:
@@ -150,39 +132,34 @@ permissions:
       root.sign.cart: true  
       root.sign.cart.create: true
   
+  root.sign.dice.*:
+    children:
+      root.sign.dice: true  
+      root.sign.dice.create: true
+  
   root.sign.info.*:
     children:
       root.sign.info: true  
       root.sign.info.create: true
       root.sign.info.edit: true
-  
-  root.sign.lift.*:
-    children:
-      root.sign.lift: true  
-      root.sign.lift.create: true
-  
-  root.sign.tesseract.*:
-    children:
-      root.sign.tesseract: true  
-      root.sign.tesseract.create: true
-      root.sign.tesseract.other: true
-
-  root.tricorder.*:
-    children:
-      root.tricorder: true
-
-  root.mute.*:
-    description: Gives access to the mute feature of Root and its bypass.
-    children:
-      root.mute: true
-      root.mute.bypass: true
-
-  root.slurp.*:
-    description: Gives access to the slurp feature of Root and its radius function.
-    children:
-      root.slurp: true
-      root.slurp.radius: true
       
+  root.sign.launch.*:
+    children:
+      root.sign.launch: true
+      root.sign.launch.create: true
+  
+  root.sleep.*:
+    children:
+      root.sleep: true
+      root.sleep.all: true
+      root.sleep.other: true
+
+  root.shadowmute.*:
+    description: Gives access to the shadowmute feature of Root and its bypass.
+    children:
+      root.shadowmute: true
+      root.shadowmute.see: true
+
   root.wand.*:
     children:
       root.wand: true

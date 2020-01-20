@@ -18,33 +18,39 @@ public class HTTP {
     }
 
     public static HTTPResponse http(String url, int timeout) throws IOException {
-        return http(url, null, timeout);
+        return http(url, null, null, timeout);
     }
 
     public static HTTPResponse http(String url, String postData) throws IOException {
-        return http(url, postData, 30000);
+        return http(url, postData, "application/x-www-form-urlencoded", 30000);
     }
 
-    public static HTTPResponse http(String url, String postData, int timeout) throws IOException {
+    public static HTTPResponse http(String url, String postData, String formType, int timeout) throws IOException {
         URL myurl = new URL(url);
         HttpURLConnection con = (HttpURLConnection) myurl.openConnection();
         con.setConnectTimeout(timeout);
         con.setReadTimeout(timeout);
 
-        con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.31 (KHTML, like Gecko) Chrome/26.0.1410.64 Safari/537.31");
+        con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.90 Safari/537.36");
+        con.setRequestProperty("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3");
+        con.setRequestProperty("Accept-Encoding", "gzip, deflate, br");
+        con.setRequestProperty("Accept-Language", "de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7,und;q=0.6");
+
+        
         if (postData != null) {
             con.setRequestMethod("POST");
             con.setRequestProperty("Content-length", String.valueOf(postData.length()));
-            con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+            con.setRequestProperty("Content-Type", formType);
             con.setDoOutput(true);
+            con.setDoInput(true);
             DataOutputStream output = new DataOutputStream(con.getOutputStream());
             output.writeBytes(postData);
             output.close();
         } else {
             con.setRequestMethod("GET");
+            con.setDoInput(true);
         }
 
-        con.setDoInput(true);
         Map<String, List<String>> headers = con.getHeaderFields();
 
         ByteArrayOutputStream bos = new ByteArrayOutputStream();

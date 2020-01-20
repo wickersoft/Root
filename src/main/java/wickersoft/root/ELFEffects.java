@@ -36,7 +36,7 @@ public class ELFEffects implements Runnable {
         for(Player player : Bukkit.getOnlinePlayers()) {
             UserDataProvider.getOrCreateUser(player).incrementActivityStatistic(hour, fixedDay, month);
         }
-        Tesseract.garbageCollect();
+        //Tesseract.garbageCollect();
         UserDataProvider.garbageCollect();
     }
 }

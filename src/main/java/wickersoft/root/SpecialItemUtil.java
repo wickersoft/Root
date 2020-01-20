@@ -22,7 +22,7 @@ public class SpecialItemUtil {
     private static final String VOLATILE_LORE = ChatColor.GRAY + "Volatile";
 
     public static ItemStack generateInstantSign(int amount, String... lines) {
-        ItemStack signStack = new ItemStack(Material.SIGN, amount, (short) 0);
+        ItemStack signStack = new ItemStack(Material.OAK_SIGN, amount);
         ArrayList<String> lore = new ArrayList<>();
         lore.add(ChatColor.GRAY + "Instant Sign");
         int maxLine = Math.min(4, lines.length);
@@ -32,11 +32,12 @@ public class SpecialItemUtil {
         ItemMeta meta = signStack.getItemMeta();
         meta.setLore(lore);
         signStack.setItemMeta(meta);
+
         return signStack;
     }
-    
+
     public static ItemStack generateKleinBottle(int amount) {
-        ItemStack signStack = new ItemStack(Material.DRAGONS_BREATH, amount, (short) 0);
+        ItemStack signStack = new ItemStack(Material.DRAGON_BREATH, amount, (short) 0);
         ArrayList<String> lore = new ArrayList<>();
         lore.add(ChatColor.GRAY + "Klein Bottle");
         lore.add(ChatColor.GRAY + "-");
@@ -53,7 +54,7 @@ public class SpecialItemUtil {
         if (setOrUnset && !hasLoreFlag(clone, loreLine)) {
             ItemMeta meta = clone.getItemMeta();
             if (meta == null) {
-                System.err.println("Unable to set a Lore lag: ItemMeta is null!");
+                System.err.println("Unable to set a Lore flag: ItemMeta is null!");
                 System.err.println("Item: ");
                 System.err.println(original);
                 return original;
@@ -106,6 +107,28 @@ public class SpecialItemUtil {
 
     public static boolean isVolatile(ItemStack is) {
         return hasLoreFlag(is, VOLATILE_LORE);
+    }
+
+    public static String getVolatileRegion(ItemStack is) {
+        if (is == null) {
+            return null;
+        }
+        if (!is.hasItemMeta()) {
+            return null;
+        }
+        if (!is.getItemMeta().hasLore()) {
+            return null;
+        }
+        List<String> lore = is.getItemMeta().getLore();
+        int numLoreLines = lore.size();
+        for (int i = 0; i < numLoreLines; i++) {
+            if (lore.get(i).equals(VOLATILE_LORE)) {
+                if(i <numLoreLines - 1) {
+                    return lore.get(i+1);
+                }
+            }
+        }
+        return null;
     }
 
     public static boolean isCursedSword(ItemStack is) {

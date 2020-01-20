@@ -1,5 +1,9 @@
 package wickersoft.root;
 
+import com.sk89q.worldedit.Vector;
+import com.sk89q.worldguard.protection.ApplicableRegionSet;
+import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+import java.util.Iterator;
 import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -27,8 +31,10 @@ public class MFEffects implements Runnable {
                 for (int i = 0; i < inv.length; i++) {
                     if (SpecialItemUtil.isVolatile(inv[i])
                             || SpecialItemUtil.isCursedSword(inv[i])) {
-                        player.getInventory().setItem(i, new ItemStack(Material.AIR));
-                        player.updateInventory();
+                        if (!Util.canPlayerHoldVolatileItem(player, inv[i])) {
+                            player.getInventory().setItem(i, new ItemStack(Material.AIR));
+                            player.updateInventory();
+                        }
                     }
                     if (inv[i] != null && inv[i].getEnchantments() != null) {
                         for (Enchantment e : inv[i].getEnchantments().keySet()) {
@@ -49,7 +55,7 @@ public class MFEffects implements Runnable {
                     Util.hideHighlightBlocks(seeLwcBlocks, player);
                 } else {
                     for (Block b : seeLwcBlocks) {
-                        if(b.getType() == Material.AIR) {
+                        if (b.getType() == Material.AIR) {
                             Util.hideHighlightBlock(b, player);
                         }
                     }

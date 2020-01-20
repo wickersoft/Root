@@ -2,7 +2,7 @@ package wickersoft.root;
 
 import wickersoft.root.command.CommandDelegator;
 import java.io.File;
-import net.md_5.bungee.api.ChatColor;
+import org.bukkit.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -41,6 +41,7 @@ public class Root extends JavaPlugin {
         ForeignCommandHook.load();
         Wand.load();
         getServer().getPluginManager().registerEvents(WatcherChat.instance(), this);
+        getServer().getPluginManager().registerEvents(WatcherEnvironment.instance(), this);
         getServer().getPluginManager().registerEvents(WatcherPlayer.instance(), this);
         getServer().getPluginManager().registerEvents(WatcherSign.instance(), this);
         getServer().getPluginManager().registerEvents(WatcherWand.instance(), this);

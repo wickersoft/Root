@@ -7,7 +7,8 @@ package wickersoft.root;
 
 import com.earth2me.essentials.Essentials;
 import com.griefcraft.lwc.LWCPlugin;
-import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+import com.sk89q.worldguard.WorldGuard;
+import com.sk89q.worldguard.protection.regions.RegionContainer;
 import java.io.File;
 import java.io.IOException;
 import java.security.MessageDigest;
@@ -15,9 +16,10 @@ import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
+import java.util.Random;
 import java.util.regex.Pattern;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
 
@@ -34,10 +36,16 @@ public class Storage {
     public static final HashMap<Pattern, String> SHORTCUTS = new HashMap<>();
     public static final HashSet<Entity> VEHICLES = new HashSet<>();
     public static final HashMap<String, String> WARN_IPS = new HashMap<>();
+    public static final Random RANDOM = new Random();
     public static final String[] KNOWN_LANGCODES = {
         "en", "de", "da", "sv", "no", "fr", "es"
     };
 
+    public static String UNDERCOVER_CHAT_FORMAT;
+    public static String SHADOWMUTE_SEE_CHAT_FORMAT;
+    public static String MYMEMORY_TRANSLATED_NET_API_KEY;
+    public static String GOOGLE_MAPS_API_KEY;
+    public static String BAN_APPEAL_MESSAGE;
     public static boolean INV_SAVE_AUTO_OVERWRITE;
     public static int MAX_SLURP_RANGE;
     public static int DEFAULT_SLURP_RANGE;
@@ -47,21 +55,28 @@ public class Storage {
     public static boolean DEBUG;
     public static MessageDigest md5;
 
-    public static Essentials essentials = (Essentials) Bukkit.getPluginManager().getPlugin("Essentials");
-    public static WorldGuardPlugin worldguard = (WorldGuardPlugin) Bukkit.getPluginManager().getPlugin("WorldGuard");
-    public static LWCPlugin lwc = (LWCPlugin) Bukkit.getPluginManager().getPlugin("LWC");
+    public static final Essentials essentials = (Essentials) Bukkit.getPluginManager().getPlugin("Essentials");
+    private static RegionContainer worldguard;
+    public static final LWCPlugin lwc = (LWCPlugin) Bukkit.getPluginManager().getPlugin("LWC");
 
     public static void loadData() {
         YamlConfiguration fc = YamlConfiguration.read(new File(Root.instance().getDataFolder(), "config.yml"));
+        UNDERCOVER_CHAT_FORMAT = ChatColor.translateAlternateColorCodes('&',
+                fc.getString("undercover-chat-format", "<%1$s> %2$s"));
+        SHADOWMUTE_SEE_CHAT_FORMAT = ChatColor.translateAlternateColorCodes('&',
+                fc.getString("shadowmute-see-chat-format", "&8<&8%1$s> &8%2$s"));
+        MYMEMORY_TRANSLATED_NET_API_KEY = fc.getString("mymemory-translated-net-api-key", "");
+        GOOGLE_MAPS_API_KEY = fc.getString("google-maps-api-key", "");
+        BAN_APPEAL_MESSAGE = fc.getString("ban-appeal-message", "");
         MAX_SLURP_RANGE = fc.getInt("max-slurp-range", 100);
         DEFAULT_SLURP_RANGE = fc.getInt("default-slurp-range", 16);
         TRANSLATION_TIMEOUT = fc.getInt("translation-timeout", 2000);
         INV_SAVE_AUTO_OVERWRITE = fc.getBoolean("inv-save-auto-overwrite", true);
         XRAY_WARN_TIME = fc.getInt("xray-warn-time-millis", 900000);
-        MAX_DEATH_INV_AGE_MILLIS = fc.getInt("max-death-inventory-age-days", 14) * 14 * 86400 * 1000 ;
+        MAX_DEATH_INV_AGE_MILLIS = fc.getLong("max-death-inventory-age-days", 14) * 86400 * 1000;
         DEBUG = fc.getBoolean("debug", false);
 
-        List<Map> shortcuts = fc.getList("shortcuts", Map.class);
+        List<YamlConfiguration> shortcuts = fc.getSectionList("shortcuts");
         SHORTCUTS.clear();
         shortcuts.forEach((map) -> {
             if (map.containsKey("replace") && map.containsKey("with")
@@ -112,6 +127,14 @@ public class Storage {
         }
     }
 
+    public static RegionContainer getWorldguard() {
+        if(worldguard == null) {
+            return (worldguard = WorldGuard.getInstance().getPlatform().getRegionContainer());
+        } else {
+            return worldguard;
+        }
+    }
+    
     static {
         try {
             md5 = MessageDigest.getInstance("MD5");

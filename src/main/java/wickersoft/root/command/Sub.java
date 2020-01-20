@@ -52,6 +52,11 @@ public class Sub extends PlayerCommand {
             player.sendMessage(ChatColor.GRAY + "Unknown language code " + ChatColor.RED + destLanguage);
             return true;
         }
+        
+        if(sourceLanguage.equals(destLanguage)) {
+            player.sendMessage(ChatColor.GRAY + "Please select two distinct languages");
+            return true;
+        }
 
         data.setSubtitleLangPair(sourceLanguage + "|" + destLanguage);
         player.sendMessage(ChatColor.GRAY + "Subtitles for Player " + data.getName() + ChatColor.GREEN + " enabled");

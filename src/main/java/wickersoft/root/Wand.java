@@ -116,7 +116,7 @@ public class Wand {
                 return;
             }
             Block block = evt.getBlock();
-            if (block.getType() == Material.SIGN_POST || block.getType() == Material.WALL_SIGN) {
+            if (block.getType() == Material.OAK_SIGN || block.getType() == Material.OAK_WALL_SIGN) {
                 Sign sign = (Sign) block.getState();
                 ItemStack dropSign = SpecialItemUtil.generateInstantSign(1, sign.getLines());
                 evt.setCancelled(true);
@@ -133,6 +133,7 @@ public class Wand {
             if (evt.getPlayer().isSneaking()) {
                 evt.getRightClicked().leaveVehicle();
                 evt.getPlayer().sendMessage(ChatColor.GRAY + "Passenger dismounted");
+                evt.getPlayer().removeMetadata("root.clipboard.stack", Root.instance());
                 return;
             }
 
@@ -140,7 +141,7 @@ public class Wand {
                 Entity e = (Entity) evt.getPlayer().getMetadata("root.clipboard.stack").get(0).value();
                 if (e != evt.getRightClicked()) {
                     evt.getRightClicked().addPassenger(e);
-                    evt.getPlayer().sendMessage(ChatColor.GRAY + "Passenger selected");
+                    evt.getPlayer().sendMessage(ChatColor.GRAY + "Entities stacked");
                     evt.getPlayer().removeMetadata("root.clipboard.stack", Root.instance());
                 }
             } else {
