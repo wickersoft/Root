@@ -46,6 +46,10 @@ commands:
     description: Display subtitles after a player's messages
     permission: root.sub
     aliases: [root:sub]
+  tesseract:
+    description: Generate tesseracts
+    permission: root.tesseract
+    aliases: [root:tesseract]  
   undercover:
     description: Go undercover and hide your chat formatting.
     permission: root.undercover
@@ -82,6 +86,7 @@ permissions:
       root.shadowmute.*: true
       root.sign.*: true
       root.sub: true
+      root.tesseract: true
       root.undercover: true
       root.uuid: true
       root.volatile: true

@@ -45,6 +45,7 @@ public class CommandDelegator {
         DELEGATIONS.put("shadowmute", new Shadowmute());
         DELEGATIONS.put("seelwc", new Seelwc());
         DELEGATIONS.put("sub", new Sub());
+        DELEGATIONS.put("tesseract", new Tesseract());
         DELEGATIONS.put("undercover", new Undercover());
         DELEGATIONS.put("uuid", new Uuid());
         DELEGATIONS.put("volatile", new Volatile());
