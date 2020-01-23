@@ -1,6 +1,5 @@
 package wickersoft.root;
 
-import com.sk89q.worldedit.Vector;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import java.util.Iterator;

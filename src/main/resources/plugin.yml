@@ -1,7 +1,7 @@
 name: Root
 main: wickersoft.root.Root
-version: 3.1.4
-api-version: 1.14
+version: 3.1.4.1
+api-version: 1.15
 author: Wickersoft+Syndek
 depend: ['WorldGuard']
 
@@ -9,52 +9,59 @@ commands:
   activity:
     description: Find out when to expect a player online
     permission: root.activity
+    aliases: [root:activity]
+  delmark:
+    description: Removes a mark from a player
+    permission: root.delmark
+    aliases: [root:delmark]
   ding:
     description: Plays a "Ding" sound when a chat message matches the specified pattern
     permission: root.ding
+    aliases: [root:ding]
   freeze:
     description: Freeze a player and stop them moving and using commands.
     permission: root.freeze
+    aliases: [f, root:f, root:freeze]
   instantsign:
     description: Generates signs that can be played without editing
-    aliases: [sign]
     permission: root.instantsign
+    aliases: [sign, root:sign, root:instantsign]
   mark:
     description: Keep notes on a player
     permission: root.mark
-  nophantom:
-    description: Prevents Phantoms from spawning within range of the user
-    permission: root.nophantom
+    aliases: [root:mark]
   player:
     description: View information about a player
-    aliases: [p]
     permission: root.player
+    aliases: [p, root:p, root:player]
   seelwc:
     description: Highlights nearby blocks protected by LWC
     permission: root.seelwc
+    aliases: [root:seelwc]
   shadowmute:
     description: Makes a player's messages only visible to that player
-    aliases: [smute]
     permission: root.shadowmute
-  sleep:
-    description: Resets a player's sleep timer
-    permission: root.sleep
+    aliases: [smute, root:smute, root:shadowmute]
   sub:
     description: Display subtitles after a player's messages
     permission: root.sub
+    aliases: [root:sub]
   undercover:
     description: Go undercover and hide your chat formatting.
     permission: root.undercover
-    aliases: [u]
+    aliases: [u, root:u, root:undercover]
   uuid:
     description: Shows UUID, current and past names of a player.
     permission: root.uuid
+    aliases: [root:uuid]
   volatile:
     description: Makes an item impossible to pick up for Players without a certain permission
     permission: root.volatile
+    aliases: [root:volatile]
   wand:
     description: Adds special right-click actions to the item held
     permission: root.wand
+    aliases: [root:wand]
 
 permissions:
   root.*:
@@ -63,18 +70,17 @@ permissions:
       root: true
       root.activity: true
       root.chat.*: true
+      root.delmark: true
       root.ding: true
       root.freeze: true
       root.item.*: true
       root.instantsign: true
       root.mark: true
-      root.nophantom: true
       root.notify.*: true
       root.player.*: true
       root.seelwc: true
       root.shadowmute.*: true
       root.sign.*: true
-      root.sleep.*: true
       root.sub: true
       root.undercover: true
       root.uuid: true
@@ -84,7 +90,6 @@ permissions:
   root.chat.*:
     children:
       root.chat: true
-      root.chat.nospam: true
       root.chat.nodisconnectspam: true
   
   root.freeze.*:

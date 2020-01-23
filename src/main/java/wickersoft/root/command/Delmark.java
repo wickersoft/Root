@@ -14,9 +14,9 @@ import wickersoft.root.StringUtil;
 
 /**
  *
- * @author Dennis
+ * @author wicden
  */
-public class Mark extends Command {
+public class Delmark extends Command {
 
     @Override
     public boolean onCommand(CommandSender sender, String[] args) {
@@ -51,32 +51,32 @@ public class Mark extends Command {
             sender.sendMessage("");
             return true;
         }
-        boolean highPrio = args[1].startsWith("@");
-        if(highPrio) {
-            args[1] = args[1].substring(1);   
+        if (!args[1].matches("\\d{1,3}")) {
+            sendExtendedUsage(sender);
+            return true;
         }
-        String markMessage = StringUtils.join(args, ' ', 1, args.length);
-        syn.root.user.Mark mark = new syn.root.user.Mark(sender, markMessage);
-        data.addMark(mark);
-        sender.sendMessage(ChatColor.GRAY + "Mark " + data.getMarks().size() + " created");
-        if(highPrio) {
-            mark.setPriority(1);
+        int markId = Integer.parseInt(args[1]) - 1;
+        if (markId >= data.getMarks().size() || markId < 0) {
+            sender.sendMessage(ChatColor.GRAY + "Invalid mark ID");
+            return true;
         }
+        data.removeMark(markId);
+        sender.sendMessage(ChatColor.GRAY + "Mark " + (markId + 1) + " removed");
         return true;
     }
 
     @Override
     public String getSyntax() {
-        return "/mark [player] {message}/{@message}";
+        return "/delmark [player] [id]";
     }
 
     @Override
     public String getDescription() {
-        return "Keep notes about a person";
+        return "Remove a mark from a Player";
     }
 
     public void sendExtendedUsage(CommandSender sender) {
         sendUsage(sender);
-        sender.sendMessage(ChatColor.BLUE + "/mark player {message}/{@message} " + ChatColor.GRAY + " - create a mark");
+        sender.sendMessage(ChatColor.BLUE + "/delmark [player] [id]" + ChatColor.GRAY + " - remvove a mark");
     }
 }

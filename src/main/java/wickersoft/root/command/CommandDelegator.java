@@ -35,16 +35,15 @@ public class CommandDelegator {
 
     static {
         DELEGATIONS.put("activity", new Activity());
+        DELEGATIONS.put("delmark", new Delmark());
         DELEGATIONS.put("ding", new Ding());
         DELEGATIONS.put("freeze", new Freeze());
         DELEGATIONS.put("instantsign", new InstantSign());
         DELEGATIONS.put("mark", new Mark());
-        DELEGATIONS.put("nophantom", new Nophantom());
         DELEGATIONS.put("player", new Player());
         DELEGATIONS.put("portal", new Portal());
         DELEGATIONS.put("shadowmute", new Shadowmute());
         DELEGATIONS.put("seelwc", new Seelwc());
-        DELEGATIONS.put("sleep", new Sleep());
         DELEGATIONS.put("sub", new Sub());
         DELEGATIONS.put("undercover", new Undercover());
         DELEGATIONS.put("uuid", new Uuid());

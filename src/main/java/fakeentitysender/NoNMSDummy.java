@@ -21,12 +21,6 @@ public class NoNMSDummy extends FakeEntitySender {
     }
 
     @Override
-    public boolean showHighlightBlock(int x, int y, int z, int entityId, Player player, boolean glow) {
-        System.err.println("Root: Unable to connect to NMS");
-        return false;
-    }
-
-    @Override
     public boolean hideHighlightBlock(Block block, Player player) {
         System.err.println("Root: Unable to connect to NMS");
         return false;

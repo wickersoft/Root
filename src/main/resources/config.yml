@@ -4,8 +4,6 @@ google-maps-api-key: ''
 max-slurp-range: 100
 default-slurp-range: 16
 xray-warn-time-millis: 900000
-max-death-inventory-age-days: 14
-inv-save-auto-overwrite: true
 shortcuts:
   - replace: "^/iload\b"
     with: "/inv load"

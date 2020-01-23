@@ -164,13 +164,6 @@ public class Util {
         loc.getWorld().spawnParticle(particle, loc.getX(), loc.getY(), loc.getZ(), amount, xO, yO, zO, speed);
     }
 
-    public static boolean showBlock(int x, int y, int z, int entityId, Player player) {
-        if (!nmsDetected) {
-            return false;
-        }
-        return fakeEntitySender.showHighlightBlock(x, y, z, entityId, player, false);
-    }
-
     public static boolean showHighlightBlocks(List<Block> blocks, Player player) {
         for (Block block : blocks) {
             if (!showHighlightBlock(block, player)) {

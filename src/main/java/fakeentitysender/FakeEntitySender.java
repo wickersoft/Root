@@ -23,8 +23,8 @@ public abstract class FakeEntitySender {
         
        
         try {
-            Class.forName("net.minecraft.server.v1_14_R1.EntityPlayer");
-            INSTANCE = new NMS_1_14_R1();
+            Class.forName("net.minecraft.server.v1_15_R1.EntityPlayer");
+            INSTANCE = new NMS_1_15_R1();
             System.out.println("Compatible NMS version detected");
             return INSTANCE;
         } catch (Exception e) {
@@ -34,8 +34,6 @@ public abstract class FakeEntitySender {
     }
 
     public abstract boolean showHighlightBlock(Block block, Player player);
-
-    public abstract boolean showHighlightBlock(int x, int y, int z, int entityId, Player player, boolean glow);
 
     public abstract boolean hideHighlightBlock(Block block, Player player);
     
