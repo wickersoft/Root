@@ -20,13 +20,13 @@
         <dependency>
             <groupId>org.bukkit</groupId>
             <artifactId>bukkit</artifactId>
-            <version>1.15.1-R0.1-SNAPSHOT</version>
+            <version>1.15.2-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot</artifactId>
-            <version>1.15.1-R0.1-SNAPSHOT</version>
+            <version>1.15.2-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -43,7 +43,7 @@
             <artifactId>worldguard</artifactId>
             <version>7.0.0</version>
             <systemPath>
-                ${project.basedir}/lib/worldguard-bukkit-7.0.1.jar
+                ${project.basedir}/lib/worldguard-bukkit-7.0.0.jar
             </systemPath>
             <scope>system</scope>
         </dependency>
