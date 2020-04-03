@@ -148,7 +148,7 @@ public class WatcherPlayer implements Listener {
                 && !evt.getPlayer().getName().equals(Storage.WARN_IPS.get(ip))) {
             Bukkit.broadcast(ChatColor.RED + "Player " + evt.getPlayer().getName() + "\'s IP matches with " + Storage.WARN_IPS.get(ip) + "!", "root.notify.iprec");
         }
-        for (int markId = data.getMarks().size() - 1; markId > 0; markId--) {
+        for (int markId = data.getMarks().size() - 1; markId >= 0; markId--) {
             syn.root.user.Mark mark = data.getMarks().get(markId);
             if (mark.getPriority() > 0) {
                 Bukkit.broadcast(ChatColor.RED + "Mark on " + evt.getPlayer().getName() + " by " + mark.getAuthor() + ": " + ChatColor.GRAY + mark.getMessage(), "root.notify.mark");
