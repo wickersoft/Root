@@ -80,7 +80,7 @@ public class Portal extends PlayerCommand {
 
     @Override
     public String getDescription() {
-        return "Creates portals and fixes links";
+        return "Creates, debugs or simulates Portals";
     }
 
 }

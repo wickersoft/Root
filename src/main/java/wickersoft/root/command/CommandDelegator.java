@@ -42,6 +42,7 @@ public class CommandDelegator {
         DELEGATIONS.put("mark", new Mark());
         DELEGATIONS.put("player", new Player());
         DELEGATIONS.put("portal", new Portal());
+        DELEGATIONS.put("rtps", new Rtps());
         DELEGATIONS.put("shadowmute", new Shadowmute());
         DELEGATIONS.put("seelwc", new Seelwc());
         DELEGATIONS.put("sub", new Sub());

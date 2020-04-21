@@ -30,10 +30,18 @@ commands:
     description: Keep notes on a player
     permission: root.mark
     aliases: [root:mark]
+  portal:
+    description: "Creates, debugs or simulates Portals"
+    permission: root.portal
+    aliases: [root:portal]
   player:
     description: View information about a player
     permission: root.player
     aliases: [p, root:p, root:player]
+  rtps:
+    description: Continuously shows instantaneous TPS and tick times
+    permission: root.rtps
+    aliases: [root:rtps]
   seelwc:
     description: Highlights nearby blocks protected by LWC
     permission: root.seelwc
@@ -81,7 +89,9 @@ permissions:
       root.instantsign: true
       root.mark: true
       root.notify.*: true
+      root.portal: true
       root.player.*: true
+      root.rtps: true
       root.seelwc: true
       root.shadowmute.*: true
       root.sign.*: true

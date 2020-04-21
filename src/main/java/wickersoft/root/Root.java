@@ -17,7 +17,7 @@ public class Root extends JavaPlugin {
 
     private static Root instance;
     public static final String logo = ChatColor.LIGHT_PURPLE + "[" + ChatColor.DARK_AQUA + "Root" + ChatColor.LIGHT_PURPLE + "] ";
-    
+
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         return CommandDelegator.onCommand(sender, cmd.getLabel().toLowerCase(), args);
@@ -45,12 +45,12 @@ public class Root extends JavaPlugin {
         getServer().getPluginManager().registerEvents(WatcherPlayer.instance(), this);
         getServer().getPluginManager().registerEvents(WatcherSign.instance(), this);
         getServer().getPluginManager().registerEvents(WatcherWand.instance(), this);
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(this, LoadAverage.instance(), 1, 1);
         Bukkit.getScheduler().scheduleSyncRepeatingTask(this, MFEffects.instance(), 20, 20);
         Bukkit.getScheduler().scheduleSyncRepeatingTask(this, ELFEffects.instance(), 6000, 6000);
     }
-    
+
     public static Root instance() {
         return instance;
     }
-
 }
