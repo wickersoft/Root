@@ -51,7 +51,9 @@ public class GSMEventCacheWiper implements Runnable {
     static {
         try {
             Class GSMClass = Class.forName("com.guillaumevdn.gslotmachine.GSlotMachine");
-            GSM = GSMClass.getDeclaredField("instance").get(null);
+            Field instanceField = GSMClass.getDeclaredField("instance");
+            instanceField.setAccessible(true);
+            GSM = instanceField.get(null);
             Field eventField = Class.forName("com.guillaumevdn.gslotmachine.GSlotMachine").getDeclaredField("events");
             eventField.setAccessible(true);
             eventCollection = (Collection) eventField.get(GSM);
