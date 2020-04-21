@@ -43,7 +43,7 @@
             <artifactId>worldguard</artifactId>
             <version>7.0.0</version>
             <systemPath>
-                ${project.basedir}/lib/worldguard-bukkit-7.0.0.jar
+                ${project.basedir}/lib/worldguard-bukkit-7.0.1.jar
             </systemPath>
             <scope>system</scope>
         </dependency>
@@ -76,6 +76,24 @@
             <artifactId>junit</artifactId>
             <version>4.7</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>GuillaumeSomething</groupId>
+            <artifactId>GSlotMachine</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+            <scope>system</scope>
+            <systemPath>
+                ${project.basedir}/lib/GSlotMachine.jar
+            </systemPath>
+        </dependency>
+        <dependency>
+            <groupId>GuillaumeSomething</groupId>
+            <artifactId>GCore</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+            <scope>system</scope>
+            <systemPath>
+                ${project.basedir}/lib/GCore.jar
+            </systemPath>
         </dependency>
     </dependencies>
     <build>

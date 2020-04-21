@@ -23,8 +23,8 @@ public class LoadAverage implements Runnable {
     
     public void run() {
         long time = System.nanoTime();
-        LOAD_TWO_SEC.add(time);
-        while(LOAD_TWO_SEC.getFirst() < time - 2000000) {
+        LOAD_TWO_SEC.addLast(time);
+        while(LOAD_TWO_SEC.getFirst() < time - 2000000000) {
             LOAD_TWO_SEC.remove();
         }
     }
@@ -34,8 +34,8 @@ public class LoadAverage implements Runnable {
     }
     
     public static long getMsAvg() {
-        long time = LOAD_TWO_SEC.stream().collect(Collectors.summingLong((e) -> {return e;}));
-        return time / (long) LOAD_TWO_SEC.size();
+        long time = (LOAD_TWO_SEC.getLast() - LOAD_TWO_SEC.getFirst()) / LOAD_TWO_SEC.size() / 1000000;
+        return time;
     }
     
     public static long getMsPeak() {
@@ -45,7 +45,7 @@ public class LoadAverage implements Runnable {
             time = Math.max(step - last, time);
             last = step;
         }
-        return time;
+        return time / 1000000;
     }
     
     

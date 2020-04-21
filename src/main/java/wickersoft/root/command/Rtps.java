@@ -7,6 +7,8 @@ package wickersoft.root.command;
 
 import java.util.HashMap;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import wickersoft.root.HotbarMessager;
 import wickersoft.root.LoadAverage;
 import wickersoft.root.Root;
 
@@ -24,7 +26,9 @@ public class Rtps extends PlayerCommand {
             Bukkit.getScheduler().cancelTask(RTPS_TASK_IDS.remove(player));
         } else {
             RtpsTask rtpsTask = new RtpsTask(player);
-            rtpsTask.setTaskId(Bukkit.getScheduler().scheduleSyncRepeatingTask(Root.instance(), rtpsTask, 0, 10));
+            int taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(Root.instance(), rtpsTask, 0, 5);
+            rtpsTask.setTaskId(taskId);
+            RTPS_TASK_IDS.put(player, taskId);
         }
         return true;
     }
@@ -58,9 +62,17 @@ public class Rtps extends PlayerCommand {
         public void run() {
             if (!player.isOnline()) {
                 Bukkit.getScheduler().cancelTask(taskId);
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
-                        String.format("/title %s actionbar "
-                                + "[\"\",{\"text\":\"TPS:  \",\"color\":\"gray\"},"
+            } else {
+                HotbarMessager.sendHotBarMessage(player,
+                        String.format(ChatColor.BLUE + "TPS: " + ChatColor.BOLD + "%2.2f" 
+                                + ChatColor.DARK_GRAY + "  -  " 
+                                + ChatColor.GRAY + "ms (Avg): " + ChatColor.BOLD + "%d"
+                                + ChatColor.DARK_GRAY + "  -  " 
+                                + ChatColor.GRAY + "ms (Peak): " + ChatColor.BOLD + "%d",
+                                LoadAverage.getTps(), LoadAverage.getMsAvg(), LoadAverage.getMsPeak()));
+
+                /*
+                        String.format("[\"\",{\"text\":\"TPS:  \",\"color\":\"gray\"},"
                                 + "{\"text\":\"%2.2f\",\"bold\":true,\"color\":\"gray\"},"
                                 + "{\"text\":\"  -  \",\"color\":\"dark_gray\"},"
                                 + "{\"text\":\"ms (Avg):  \",\"color\":\"blue\"},"
@@ -68,7 +80,8 @@ public class Rtps extends PlayerCommand {
                                 + "{\"text\":\"  -  \",\"color\":\"dark_gray\"},"
                                 + "{\"text\":\"ms (Peak):  \",\"color\":\"gray\"},"
                                 + "{\"text\":\"%d\",\"bold\":true,\"color\":\"gray\"}]",
-                                playerName, LoadAverage.getTps(), LoadAverage.getMsAvg(), LoadAverage.getMsPeak()));
+                                LoadAverage.getTps(), LoadAverage.getMsAvg(), LoadAverage.getMsPeak()));
+                 */
             }
         }
 

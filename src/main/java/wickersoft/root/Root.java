@@ -8,6 +8,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 import syn.root.user.UserDataProvider;
+import wickersoft.root.dirty.GSMEventCacheWiper;
 
 /**
  *
@@ -48,6 +49,11 @@ public class Root extends JavaPlugin {
         Bukkit.getScheduler().scheduleSyncRepeatingTask(this, LoadAverage.instance(), 1, 1);
         Bukkit.getScheduler().scheduleSyncRepeatingTask(this, MFEffects.instance(), 20, 20);
         Bukkit.getScheduler().scheduleSyncRepeatingTask(this, ELFEffects.instance(), 6000, 6000);
+
+        // Do Dirty Deeds
+        if (getConfig().getBoolean("gsm-wiper")) {
+            GSMEventCacheWiper.instance();
+        }
     }
 
     public static Root instance() {
