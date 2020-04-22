@@ -37,9 +37,6 @@ public class Storage {
     public static final HashSet<Entity> VEHICLES = new HashSet<>();
     public static final HashMap<String, String> WARN_IPS = new HashMap<>();
     public static final Random RANDOM = new Random();
-    public static final String[] KNOWN_LANGCODES = {
-        "en", "de", "da", "sv", "no", "fr", "es"
-    };
 
     public static String UNDERCOVER_CHAT_FORMAT;
     public static String SHADOWMUTE_SEE_CHAT_FORMAT;

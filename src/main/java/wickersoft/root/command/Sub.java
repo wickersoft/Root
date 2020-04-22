@@ -5,6 +5,7 @@
  */
 package wickersoft.root.command;
 
+import java.util.Locale;
 import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -44,11 +45,11 @@ public class Sub extends PlayerCommand {
             destLanguage = "en";
         }
 
-        if (!ArrayUtils.contains(Storage.KNOWN_LANGCODES, sourceLanguage)) {
+        if (!ArrayUtils.contains(Locale.getISOLanguages(), sourceLanguage)) {
             player.sendMessage(ChatColor.GRAY + "Unknown language code " + ChatColor.RED + sourceLanguage);
             return true;
         }
-        if (!ArrayUtils.contains(Storage.KNOWN_LANGCODES, destLanguage)) {
+        if (!ArrayUtils.contains(Locale.getISOLanguages(), destLanguage)) {
             player.sendMessage(ChatColor.GRAY + "Unknown language code " + ChatColor.RED + destLanguage);
             return true;
         }
