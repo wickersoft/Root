@@ -121,6 +121,7 @@ public abstract class ForeignCommandHook {
                     sb.append(ChatColor.GRAY).append(", ").append(ChatColor.RED).append(regionNames.remove(0));
                 }
                 evt.getPlayer().sendMessage(sb.toString());
+                return;
             }
             
             if(m.group(2).equals("overlap")) {
