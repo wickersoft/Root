@@ -27,14 +27,13 @@ public class MFEffects implements Runnable {
         if (!player.hasPermission("root.item.volatile")) {
             ItemStack[] inv = player.getInventory().getContents();
             for (int i = 0; i < inv.length; i++) {
-                if (SpecialItemUtil.isVolatile(inv[i])
-                        || SpecialItemUtil.isCursedSword(inv[i])) {
+                if (SpecialItemUtil.isVolatile(inv[i])) {
                     if (!Util.canPlayerHoldVolatileItem(player, inv[i])) {
                         player.getInventory().setItem(i, new ItemStack(Material.AIR));
                         player.updateInventory();
                     }
                 }
-                if (inv[i] != null && inv[i].getEnchantments() != null) {
+                if (inv[i] != null) {
                     for (Enchantment e : inv[i].getEnchantments().keySet()) {
                         if (inv[i].getEnchantments().get(e) > 16) {
                             player.getInventory().setItem(i, new ItemStack(Material.AIR));

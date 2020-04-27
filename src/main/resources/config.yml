@@ -4,6 +4,8 @@ google-maps-api-key: ''
 max-slurp-range: 100
 default-slurp-range: 16
 xray-warn-time-millis: 900000
+flykick-message: Flying is not enabled on this server
+spamkick-message: Kicked for spamming
 shortcuts:
   - replace: "^/iload\b"
     with: "/inv load"

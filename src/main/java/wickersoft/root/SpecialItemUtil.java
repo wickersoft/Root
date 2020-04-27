@@ -130,24 +130,4 @@ public class SpecialItemUtil {
         }
         return null;
     }
-
-    public static boolean isCursedSword(ItemStack is) {
-        if (is == null) {
-            return false;
-        }
-        if (is.getType() != Material.DIAMOND_SWORD) {
-            return false;
-        }
-        if (!is.hasItemMeta()) {
-            return false;
-        }
-        if (!is.getItemMeta().hasLore()) {
-            return false;
-        }
-        if (is.getItemMeta().hasEnchants()) {
-            return false;
-        }
-        return is.getItemMeta().getLore().get(0).equals("Forged by the undead");
-    }
-
 }

@@ -88,7 +88,7 @@ public abstract class ForeignCommandHook {
 
     public static class RgDefineHook extends ForeignCommandHook {
 
-        private final Pattern p = Pattern.compile("^\\/(rg|region) (define|overlap)");
+        private final Pattern p = Pattern.compile("^\\/(rg|region) (redefine|define|overlap)");
 
         @Override
         public Pattern getPattern() {
