@@ -44,7 +44,6 @@ public class Portal extends PlayerCommand {
                 player.sendMessage(ChatColor.GRAY + "Source and destination portals spawned");
                 break;
         }
-
         return true;
     }
 

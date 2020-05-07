@@ -106,7 +106,7 @@ public abstract class ForeignCommandHook {
             if (!m.find()) {
                 return;
             }
-            
+
             List<String> regionNames = Util.getRegionsCollidingWithPlayerSelection(evt.getPlayer());
 
             if (!regionNames.isEmpty()) {
@@ -121,12 +121,11 @@ public abstract class ForeignCommandHook {
                     sb.append(ChatColor.GRAY).append(", ").append(ChatColor.RED).append(regionNames.remove(0));
                 }
                 evt.getPlayer().sendMessage(sb.toString());
-                return;
             }
             
-            if(m.group(2).equals("overlap")) {
+            if (m.group(2).equals("overlap")) {
                 evt.setCancelled(true);
-                if(regionNames.isEmpty()) {
+                if (regionNames.isEmpty()) {
                     evt.getPlayer().sendMessage(ChatColor.BLUE + "Root: " + ChatColor.GRAY + "Your selection does not overlap woth any WorldGuard regions");
                 }
             }
